@@ -1,8 +1,21 @@
-import '../styles/globals.css'
-import type { AppProps } from 'next/app'
+import { DefaultSeo } from "next-seo";
+import { ThemeProvider } from "next-themes";
+import type { AppProps } from "next/app";
+import "../styles/globals.css";
 
 function MyApp({ Component, pageProps }: AppProps) {
-  return <Component {...pageProps} />
+  return (
+    <>
+      <DefaultSeo title="Ancestry" />
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        storageKey="ancestry-mode"
+      >
+        <Component {...pageProps} />
+      </ThemeProvider>
+    </>
+  );
 }
 
-export default MyApp
+export default MyApp;

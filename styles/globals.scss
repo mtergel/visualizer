@@ -1,0 +1,33 @@
+.light {
+  --color-text-base: #3c4043;
+  --color-text-muted: #5f6368;
+  --color-border-base: #dadce0;
+  --color-background-base: #ffffff;
+}
+.dark {
+  --color-text-base: #e8eaed;
+  --color-text-muted: #9aa0a6;
+  --color-border-base: #5f6368;
+  --color-background-base: #202124;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  *,
+  ::before,
+  ::after {
+    @apply border-skin-base;
+  }
+  body {
+    @apply text-skin-base bg-skin-base;
+  }
+}
+
+@layer components {
+  .r-icon {
+    @apply h-5 w-5;
+  }
+}

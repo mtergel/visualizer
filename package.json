@@ -8,11 +8,13 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@react-icons/all-files": "^4.1.0",
     "next": "12.0.10",
     "next-seo": "^5.1.0",
     "next-themes": "^0.0.15",
     "react": "17.0.2",
-    "react-dom": "17.0.2"
+    "react-dom": "17.0.2",
+    "sass": "^1.49.7"
   },
   "devDependencies": {
     "@types/node": "17.0.15",

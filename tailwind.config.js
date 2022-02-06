@@ -34,6 +34,16 @@ module.exports = {
         ],
         logo: ["Noto Sans", "ui-sans-serif"],
       },
+
+      animation: {
+        spinner: "spinner 1.5s linear infinite",
+      },
+      keyframes: {
+        spinner: {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(360deg)" },
+        },
+      },
     },
   },
   plugins: [],

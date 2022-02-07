@@ -22,13 +22,13 @@
   }
 
   &.btn-default {
-    @apply bg-gray-400 bg-opacity-10;
+    @apply bg-gray-400 bg-opacity-10 text-skin-muted;
     &:hover {
-      @apply bg-opacity-20;
+      @apply bg-opacity-20 text-skin-base;
     }
     &:focus,
     &:focus-visible {
-      @apply outline-none ring ring-gray-400;
+      @apply outline-none ring ring-gray-400 text-skin-base;
     }
 
     &:active:not(:disabled) {

@@ -1,7 +1,7 @@
 .btn {
   @apply inline-flex items-center justify-center relative appearance-none;
   @apply border border-transparent;
-  @apply rounded font-semibold;
+  @apply rounded-lg font-semibold;
   @apply outline-none transition-colors;
 
   &:disabled {
@@ -22,17 +22,13 @@
   }
 
   &.btn-default {
-    @apply bg-gray-400 bg-opacity-10 text-skin-muted;
-    &:hover {
-      @apply bg-opacity-20 text-skin-base;
+    @apply bg-gray-400 bg-opacity-10 text-skin-muted focus:ring focus:ring-gray-300 dark:text-white dark:focus:ring-gray-500;
+    &:hover,
+    &:focus {
+      @apply bg-opacity-20;
     }
-    &:focus,
-    &:focus-visible {
-      @apply outline-none ring ring-gray-400 text-skin-base;
-    }
-
     &:active:not(:disabled) {
-      // @apply bg-indigo-700;
+      @apply bg-opacity-30;
     }
 
     &.btn-outline,
@@ -55,15 +51,19 @@
   }
 
   &.btn-primary {
-    @apply bg-indigo-500 focus:bg-indigo-600 focus:ring focus:ring-indigo-300;
+    @apply bg-indigo-500 text-white focus:ring focus:ring-indigo-300 dark:bg-indigo-300 dark:text-black;
 
+    &:hover,
+    &:focus {
+      @apply bg-indigo-600 dark:bg-indigo-400;
+    }
     &:active:not(:disabled) {
-      @apply bg-indigo-700;
+      @apply bg-indigo-700 dark:bg-indigo-500;
     }
 
     &.btn-outline,
     &.btn-ghost {
-      @apply text-skin-base bg-opacity-0;
+      @apply text-indigo-500 bg-opacity-0 dark:text-indigo-300;
       &:focus:not(:disabled) {
         @apply bg-opacity-10;
       }
@@ -76,20 +76,28 @@
     }
 
     &.btn-outline {
-      @apply border-skin-base;
+      @apply border-indigo-300;
+      &:hover,
+      &:focus {
+        @apply border-indigo-500 dark:border-indigo-400;
+      }
     }
   }
 
   &.btn-danger {
-    @apply bg-rose-500 focus:bg-rose-600 focus:ring focus:ring-rose-300;
+    @apply bg-red-500 text-white focus:ring focus:ring-red-300 dark:bg-red-300 dark:text-black;
 
+    &:hover,
+    &:focus {
+      @apply bg-red-600 dark:bg-red-400;
+    }
     &:active:not(:disabled) {
-      @apply bg-rose-700;
+      @apply bg-red-700 dark:bg-red-500;
     }
 
     &.btn-outline,
     &.btn-ghost {
-      @apply text-rose-500 bg-opacity-0;
+      @apply text-red-500 bg-opacity-0 dark:text-red-300;
       &:focus:not(:disabled) {
         @apply bg-opacity-10;
       }
@@ -102,7 +110,11 @@
     }
 
     &.btn-outline {
-      @apply border-rose-500;
+      @apply border-red-300;
+      &:hover,
+      &:focus {
+        @apply border-red-500 dark:border-red-400;
+      }
     }
   }
 

@@ -13,6 +13,7 @@ import {
   RadioGroupRadio,
 } from "components/RadioGroup/RadioGroup";
 import { useTheme } from "next-themes";
+import Link from "next/link";
 
 interface LayoutProps {}
 
@@ -26,12 +27,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 };
 
 const Header: React.FC<{}> = () => {
-  const { resolvedTheme, setTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
-  const toggleTheme = () => {
-    setTheme(isDark ? "light" : "dark");
-  };
-
   return (
     <header className="flex items-center h-16 border-b">
       <div className="w-[72px] flex items-center justify-center flex-shrink-0 h-full text-center lg:w-[60px]">
@@ -39,20 +34,35 @@ const Header: React.FC<{}> = () => {
           aria-label="toggle sidemenu"
           icon={<HiMenu />}
           variant="ghost"
+          className="md:hidden"
         />
       </div>
-      <h1 className="flex flex-row items-center gap-2">
-        <span>
-          <MainIcon className="h-6 w-6 text-indigo-500 dark:text-indigo-300" />
-        </span>
-        <span className="font-logo tracking-tighter font-bold text-2xl dark:text-indigo-300">
-          Visualizer
-        </span>
+      <h1>
+        <Link href="/" passHref>
+          <a className="flex flex-row items-center gap-2">
+            <span>
+              <MainIcon className="h-6 w-6 text-indigo-500 dark:text-indigo-300" />
+            </span>
+            <span className="font-logo tracking-tighter font-bold text-2xl dark:text-indigo-300">
+              Visualizer
+            </span>
+          </a>
+        </Link>
       </h1>
       <nav className="h-full relative flex justify-end flex-1 text-right">
-        <div className="mr-[60px] inline-flex items-center justify-center">
-          <LinkTab link="/sorting" name="Sort" />
-          <div className="flex items-center justify-center">
+        <div className="mr-0 inline-flex items-center justify-center md:mr-[60px]">
+          <LinkTab
+            link="/sorting"
+            name="Sorting"
+            className="hidden md:inline-flex"
+          />
+          <LinkTab
+            link="/pathfinding"
+            name="Pathfinding"
+            className="hidden md:inline-flex"
+          />
+
+          <div className="flex items-center justify-center mx-[14px]">
             <Dialog
               contentClassname="flex flex-col"
               content={<ApperanceTheme />}

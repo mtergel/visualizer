@@ -43,6 +43,7 @@ const Dialog: React.FC<DialogProps> = ({
               variant="ghost"
               aria-label="cross"
               icon={<HiX />}
+              size="sm"
             />
           </DialogPrimitive.Close>
         </DialogPrimitive.Content>

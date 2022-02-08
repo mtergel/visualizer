@@ -1,0 +1,12 @@
+.radio-item {
+  @apply w-5 h-5 rounded-full border;
+}
+
+.radio-item-indicator {
+  @apply w-full h-full flex items-center justify-center relative;
+
+  &::after {
+    content: "";
+    @apply block w-2.5 h-2.5 rounded-full bg-indigo-500 dark:bg-indigo-300;
+  }
+}

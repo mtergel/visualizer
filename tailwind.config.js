@@ -21,6 +21,7 @@ module.exports = {
       backgroundColor: {
         skin: {
           base: "var(--color-background-base)",
+          offset: "var(--color-background-offset)",
         },
       },
 
@@ -37,11 +38,26 @@ module.exports = {
 
       animation: {
         spinner: "spinner 1.5s linear infinite",
+        opacityFadeIn: "opacityFadeIn 150ms cubic-bezier(0.16, 1, 0.3, 1)",
+        slideUp: "slideUp 400ms cubic-bezier(0.16, 1, 0.3, 1)",
+        contentShow: "contentShow 200ms cubic-bezier(0.16, 1, 0.3, 1)",
       },
       keyframes: {
         spinner: {
           "0%": { transform: "rotate(0deg)" },
           "100%": { transform: "rotate(360deg)" },
+        },
+        opacityFadeIn: {
+          "0%": { opacity: 0 },
+          "100%": { opacity: 1 },
+        },
+        slideUp: {
+          "0%": { transform: "translateY(4px)" },
+          "100%": { transform: "translateY(0)" },
+        },
+        contentShow: {
+          "0%": { opacity: 0, transform: "translate(-50%, -48%)" },
+          "100%": { opacity: 1, transform: "translate(-50%, -50%)" },
         },
       },
     },

@@ -1,11 +1,9 @@
 .link-tab {
-  @apply text-skin-muted h-full inline-flex items-center justify-center w-[100px];
+  @apply h-full min-w-[120px] py-0 px-6;
+  @apply text-skin-muted font-medium inline-flex items-center justify-center transition-colors;
 
-  // @apply text-skin-base bg-white bg-opacity-20;
-
-  // &::hover,
-  // &::focus,
-  // &:focus-active {
-  //   @apply text-skin-base bg-white bg-opacity-10;
-  // }
+  &:hover,
+  &:focus {
+    @apply text-skin-base bg-white bg-opacity-5;
+  }
 }

@@ -1,0 +1,31 @@
+.dialog-overlay {
+  @apply bg-black dark:bg-black bg-opacity-50 dark:bg-opacity-60 fixed inset-0;
+  @media (prefers-reduced-motion: no-preference) {
+    will-change: opacity;
+    @apply animate-opacityFadeIn;
+  }
+}
+.dialog-content {
+  @apply inset-0 transform-none rounded-none bg-skin-offset fixed overflow-y-auto;
+  @apply sm:rounded-lg sm:max-w-lg sm:top-1/2 sm:left-1/2 sm:bottom-auto sm:transform sm:-translate-x-1/2 sm:-translate-y-1/2;
+
+  @media (prefers-reduced-motion: no-preference) {
+    will-change: transition;
+    @apply animate-slideUp;
+  }
+
+  @media (min-width: 640px) {
+    @media (prefers-reduced-motion: no-preference) {
+      will-change: transform, opacity;
+      @apply animate-contentShow;
+    }
+  }
+}
+
+.dialog-title {
+  @apply font-semibold;
+}
+
+.dialog-description {
+  @apply text-sm text-skin-muted;
+}

@@ -1,0 +1,11 @@
+.link-tab {
+  @apply text-skin-muted h-full inline-flex items-center justify-center w-[100px];
+
+  // @apply text-skin-base bg-white bg-opacity-20;
+
+  // &::hover,
+  // &::focus,
+  // &:focus-active {
+  //   @apply text-skin-base bg-white bg-opacity-10;
+  // }
+}

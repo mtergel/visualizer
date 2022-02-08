@@ -8,11 +8,11 @@ import Layout from "components/Layout/Layout";
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
-      <DefaultSeo title="Ancestry" />
+      <DefaultSeo title="Visualizer" />
       <ThemeProvider
         attribute="class"
         defaultTheme="system"
-        storageKey="ancestry-mode"
+        storageKey="visualizer-mode"
       >
         <IconContext.Provider value={{ className: "r-icon" }}>
           <Layout>

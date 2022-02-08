@@ -6,11 +6,11 @@ import "../styles/globals.css";
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
-      <DefaultSeo title="Ancestry" />
+      <DefaultSeo title="Visualizer" />
       <ThemeProvider
         attribute="class"
         defaultTheme="system"
-        storageKey="ancestry-mode"
+        storageKey="visualizer-mode"
       >
         <Component {...pageProps} />
       </ThemeProvider>

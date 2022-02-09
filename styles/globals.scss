@@ -32,9 +32,9 @@
   .r-icon {
     @apply h-5 w-5;
   }
-
+  @import "components/Layout/layout.scss";
   @import "components/Button/button.scss";
-  @import "components/LinkTab/linkTab.scss";
   @import "components/Dialog/dialog.scss";
   @import "components/RadioGroup/radioGroup.scss";
+  @import "components/Drawer/drawer.scss";
 }

@@ -41,6 +41,9 @@ module.exports = {
         opacityFadeIn: "opacityFadeIn 150ms cubic-bezier(0.16, 1, 0.3, 1)",
         slideUp: "slideUp 400ms cubic-bezier(0.16, 1, 0.3, 1)",
         contentShow: "contentShow 200ms cubic-bezier(0.16, 1, 0.3, 1)",
+        slideRightDrawer:
+          "slideRightDrawer 400ms cubic-bezier(0.16, 1, 0.3, 1)",
+        slideLeftDrawer: "slideLeftDrawer 400ms cubic-bezier(0.16, 1, 0.3, 1)",
       },
       keyframes: {
         spinner: {
@@ -58,6 +61,14 @@ module.exports = {
         contentShow: {
           "0%": { opacity: 0, transform: "translate(-50%, -48%)" },
           "100%": { opacity: 1, transform: "translate(-50%, -50%)" },
+        },
+        slideRightDrawer: {
+          "0%": { transform: "translateX(-100px)" },
+          "100%": { transform: "translateX(0)" },
+        },
+        slideLeftDrawer: {
+          "0%": { transform: "translateX(100px)" },
+          "100%": { transform: "translateX(0)" },
         },
       },
     },

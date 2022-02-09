@@ -1,0 +1,29 @@
+.drawer-overlay {
+  @apply z-50 bg-black/50 fixed inset-0;
+  @media (prefers-reduced-motion: no-preference) {
+    will-change: opacity;
+    @apply animate-opacityFadeIn;
+  }
+}
+
+.drawer-content {
+  @apply z-50 transform-none rounded-none bg-skin-offset fixed overflow-y-auto;
+
+  &.drawer-content-right {
+    @apply right-0 top-0 bottom-0;
+    width: 80%;
+    @media (prefers-reduced-motion: no-preference) {
+      will-change: opacity transform;
+      @apply animate-slideLeftDrawer;
+    }
+  }
+
+  &.drawer-content-left {
+    @apply left-0 top-0 bottom-0;
+    width: 80%;
+    @media (prefers-reduced-motion: no-preference) {
+      will-change: opacity transform;
+      @apply animate-slideRightDrawer;
+    }
+  }
+}

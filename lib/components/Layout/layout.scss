@@ -1,0 +1,42 @@
+.drawer-link {
+  @apply cursor-pointer outline-none block h-12 w-full p-0 rounded-r-3xl relative;
+
+  &:hover {
+    @apply bg-gray-400 bg-opacity-10;
+
+    & .drawer-link-inner {
+      @apply text-black dark:text-white;
+    }
+  }
+
+  &.drawer-link-active {
+    @apply bg-indigo-500 bg-opacity-10 dark:bg-indigo-300 dark:bg-opacity-10;
+    & .drawer-link-inner {
+      @apply text-indigo-500 dark:text-indigo-300;
+    }
+  }
+}
+
+.drawer-link-inner {
+  @apply pl-6 flex items-center px-4 h-full;
+}
+
+.link-tab {
+  @apply h-full min-w-[120px] py-0 px-6;
+  @apply text-skin-muted font-medium inline-flex items-center justify-center transition-colors;
+
+  &:hover,
+  &:focus {
+    @apply text-skin-base bg-gray-600 bg-opacity-10 dark:bg-white dark:bg-opacity-5;
+  }
+}
+
+.link-tab-active {
+  @apply text-indigo-500 dark:text-indigo-300;
+  @apply border-b-2 -mb-0.5 border-b-indigo-500 dark:border-b-indigo-300;
+
+  &:hover,
+  &:focus {
+    @apply text-indigo-500 dark:text-indigo-300 bg-indigo-500 bg-opacity-10 dark:bg-indigo-300 dark:bg-opacity-10;
+  }
+}

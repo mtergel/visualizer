@@ -22,6 +22,7 @@ module.exports = {
         skin: {
           base: "var(--color-background-base)",
           offset: "var(--color-background-offset)",
+          secondary: "var(--color-background-secondary)",
         },
       },
 

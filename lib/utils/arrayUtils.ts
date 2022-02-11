@@ -15,7 +15,7 @@ export const generateRandomArray = (
   lowerBound: number,
   upperBound: number
 ): Array<{ id: string; value: number }> => {
-  console.log("runnig:");
+  console.log("runnig: ", length);
   return Array.from({ length }, () => ({
     id: nanoid(),
     value: generateRandomNumberFromRange(lowerBound, upperBound),

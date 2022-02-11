@@ -1,0 +1,37 @@
+.slider {
+  @apply cursor-pointer relative flex items-center select-none w-full;
+
+  &[data-orientation="horizontal"] {
+    @apply h-4;
+  }
+
+  &[data-orientation="vertical"] {
+    @apply flex-col w-5 h-24;
+  }
+
+  & .track {
+    @apply bg-indigo-400 bg-opacity-20 dark:bg-indigo-300 dark:bg-opacity-20 relative flex-grow rounded-full;
+
+    &[data-orientation="horizontal"] {
+      @apply h-1;
+    }
+
+    &[data-orientation="vertical"] {
+      @apply w-1;
+    }
+  }
+
+  & .range {
+    @apply absolute bg-indigo-500 dark:bg-indigo-300 rounded-full h-full;
+  }
+
+  & .thumb {
+    @apply block h-5 w-5 transition-shadow bg-white  border-2 shadow;
+
+    border-radius: 10px;
+
+    &:focus {
+      @apply ring-indigo-300 ring-opacity-60 ring-4;
+    }
+  }
+}

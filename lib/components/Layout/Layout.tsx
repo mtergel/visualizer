@@ -22,10 +22,10 @@ interface LayoutProps {}
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
-    <>
+    <div className="flex flex-col h-full">
       <Header />
-      <main>{children}</main>
-    </>
+      <main className="flex-grow">{children}</main>
+    </div>
   );
 };
 

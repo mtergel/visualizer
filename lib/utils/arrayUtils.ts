@@ -1,9 +1,11 @@
+import { nanoid } from "nanoid";
+
 /**
  * Generates an array of integers with random values inclusive from lowerBound to upperBound
  * @param length {Number} The length of the generated array
  * @param lowerBound {Number} Lower bound number inclusive
  * @param upperBound {Number} Upper bound number inclusive
- * @returns {number[]} Returns generated random number
+ * @returns {Array.<{id: string, value: number}>} Returns generated random number
  *
  * @example <caption>Example:</caption>
  * generateRandomArray(100, 0, 100);
@@ -12,10 +14,12 @@ export const generateRandomArray = (
   length: number,
   lowerBound: number,
   upperBound: number
-): number[] => {
-  return Array.from({ length }, () =>
-    generateRandomNumberFromRange(lowerBound, upperBound)
-  );
+): Array<{ id: string; value: number }> => {
+  console.log("runnig:");
+  return Array.from({ length }, () => ({
+    id: nanoid(),
+    value: generateRandomNumberFromRange(lowerBound, upperBound),
+  }));
 };
 
 /**

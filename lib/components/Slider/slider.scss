@@ -33,5 +33,8 @@
     &:focus {
       @apply ring-indigo-300 ring-opacity-60 ring-4;
     }
+    &:focus-visible {
+      @apply outline-none;
+    }
   }
 }

@@ -1,22 +1,26 @@
-import Button from "components/Button/Button";
-import IconButton from "components/IconButton/IconButton";
-import Slider from "components/Slider/Slider";
-import { ChangeEvent, useCallback, useEffect, useState } from "react";
-import { useResizeDetector } from "react-resize-detector";
-import { generateRandomArray } from "utils/arrayUtils";
 import { HiCog } from "@react-icons/all-files/hi/HiCog";
+import clsx from "clsx";
+import Button from "components/Button/Button";
 import Dialog, {
   DialogClose,
   DialogDescription,
   DialogTitle,
 } from "components/Dialog/Dialog";
+import IconButton from "components/IconButton/IconButton";
+import Slider from "components/Slider/Slider";
+import { bubbleSort } from "core/sorting";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
+import { useResizeDetector } from "react-resize-detector";
+import { UIArray } from "types";
+import { generateRandomArray } from "utils/arrayUtils";
 
 interface SortingProps {}
 
-const ARRAY_MAX = 200;
-const ARRAY_LEN = 100;
+const ARRAY_MAX = 600;
+const ARRAY_INIT = 100;
 const ARRAY_LOWER = 1;
 const ARRAY_UPPER = 100;
+const DEFAULT_TIMEOUT = 30;
 
 enum AlgoKey {
   "BUBBLE" = "Bubble Sort",
@@ -28,31 +32,42 @@ enum AlgoKey {
 }
 
 const Sorting: React.FC<SortingProps> = () => {
-  const [randomArray, setRandomArray] = useState<
-    { id: string; value: number }[] | null
-  >(null);
-  const [arrayLen, setArrayLen] = useState(ARRAY_LEN);
+  const [randomArray, setRandomArray] = useState<UIArray | null>(null);
+  const [arrayLen, setArrayLen] = useState(ARRAY_INIT);
   const [sortingAlgo, setSortingAlgo] = useState<AlgoKey>(AlgoKey.BUBBLE);
+  const [looking, setLooking] = useState<string[]>([]);
   const { width, height, ref } = useResizeDetector();
 
   useEffect(() => {
-    setRandomArray(generateRandomArray(ARRAY_LEN, ARRAY_LOWER, ARRAY_UPPER));
+    const generated = generateRandomArray(ARRAY_INIT, ARRAY_LOWER, ARRAY_UPPER);
+    setRandomArray(generated);
   }, []);
 
-  const handleGenerateNew = useCallback(() => {
-    setRandomArray(generateRandomArray(arrayLen, ARRAY_LOWER, ARRAY_UPPER));
-  }, [arrayLen]);
+  const handleGenerateNew = useCallback((len) => {
+    const generated = generateRandomArray(len, ARRAY_LOWER, ARRAY_UPPER);
+    setRandomArray(generated);
+  }, []);
 
   const handleAlgoChange = (e: ChangeEvent<HTMLSelectElement>) => {
     setSortingAlgo(e.currentTarget.value as AlgoKey);
   };
+
+  const handleSort = useCallback(async () => {
+    if (randomArray) {
+      const callback = (looking: string[], arr: UIArray) => {
+        setLooking(looking);
+        setRandomArray(arr);
+      };
+      await bubbleSort(randomArray, callback, DEFAULT_TIMEOUT);
+    }
+  }, [randomArray]);
 
   return (
     <div className="flex flex-col h-full">
       <div className="h-[4.5rem] bg-skin-secondary border-b">
         <div className="max-w-screen-2xl mx-auto flex items-center h-full px-4 md:px-[60px]">
           <div className="items-center flex-grow gap-3 hidden sm:flex">
-            <div className="max-w-[144px] w-full flex-shrink-0 flex flex-col">
+            <div className="max-w-[200px] w-full flex-shrink-0 flex flex-col">
               <label htmlFor="arrayLength" className="text-xs text-skin-muted">
                 Size
               </label>
@@ -63,28 +78,31 @@ const Sorting: React.FC<SortingProps> = () => {
                 step={10}
                 onValueChange={(val) => {
                   setArrayLen(val[0]);
-                  handleGenerateNew();
+                  handleGenerateNew(val[0]);
                 }}
                 name="Array length"
                 value={[arrayLen]}
               />
             </div>
-            <label htmlFor=""></label>
             <select
               aria-label="select sorting algorithm"
               value={sortingAlgo}
               onChange={handleAlgoChange}
-              className="h-10 bg-transparent border border-skin-base rounded-lg font-semibold focus:ring focus:ring-gray-300"
+              className="h-10 bg-transparent border border-skin-base rounded-lg font-semibold focus:outline-none focus:border-transparent focus:ring focus:ring-indigo-500 dark:focus:ring-indigo-300"
             >
               {Object.entries(AlgoKey).map((pair) => (
-                <option key={pair[0]} value={pair[1]} className="font-normal">
+                <option
+                  key={pair[0]}
+                  value={pair[1]}
+                  className="font-normal text-sm bg-skin-base text-skin-base"
+                >
                   {pair[1]}
                 </option>
               ))}
             </select>
           </div>
 
-          <div className="flex-shrink-0 flex items-center justify-end gap-2">
+          <div className="flex-shrink-0 flex items-center justify-end gap-2 w-full sm:w-auto">
             <Dialog
               contentClassname="flex flex-col"
               content={
@@ -105,7 +123,7 @@ const Sorting: React.FC<SortingProps> = () => {
                           step={10}
                           onValueChange={(val) => {
                             setArrayLen(val[0]);
-                            handleGenerateNew();
+                            handleGenerateNew(val[0]);
                           }}
                           name="Array length"
                           value={[arrayLen]}
@@ -131,7 +149,12 @@ const Sorting: React.FC<SortingProps> = () => {
                   </div>
                   <div className="bg-skin-offset px-6 pb-4 w-full">
                     <DialogClose asChild>
-                      <Button isFullWidth color="primary" className="px-8">
+                      <Button
+                        onClick={handleSort}
+                        isFullWidth
+                        color="primary"
+                        className="px-8"
+                      >
                         Sort
                       </Button>
                     </DialogClose>
@@ -147,7 +170,11 @@ const Sorting: React.FC<SortingProps> = () => {
               />
             </Dialog>
 
-            <Button color="primary" className="px-8">
+            <Button
+              onClick={handleSort}
+              color="primary"
+              className="px-8 w-full sm:w-auto"
+            >
               Sort
             </Button>
           </div>
@@ -168,7 +195,11 @@ const Sorting: React.FC<SortingProps> = () => {
                     height: `${i.value}%`,
                     width: `${100 / randomArray.length}%`,
                   }}
-                  className="bg-black bg-opacity-10 dark:bg-white dark:bg-opacity-20 rounded-t-full flex-shrink-0"
+                  className={clsx(
+                    "bg-black bg-opacity-10 dark:bg-white dark:bg-opacity-20 rounded-t-full flex-shrink-0 transition-colors",
+                    looking.includes(i.id) &&
+                      "bg-indigo-500 bg-opacity-100 dark:bg-indigo-300 dark:bg-opacity-100"
+                  )}
                 />
               ))
             ) : (

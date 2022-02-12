@@ -1,6 +1,32 @@
 import { UIArray } from "types";
 import { timeout } from "utils/timingUtils";
 
+export const checkSorted = async (
+  arr: UIArray,
+  callback: (looking: string[]) => void,
+  delay: number
+) => {
+  let viewed: string[] = [];
+  if (arr.length == 0 || arr.length == 1) {
+    return true;
+  }
+
+  viewed.push(arr[0].id);
+  callback([...viewed]);
+  await timeout(delay);
+
+  for (let i = 1; i < arr.length; i++) {
+    viewed.push(arr[i].id);
+    callback([...viewed]);
+    await timeout(delay);
+    if (arr[i - 1].value > arr[i].value) {
+      return false;
+    }
+  }
+  callback([...viewed]);
+  return true;
+};
+
 export const bubbleSort = async (
   arr: UIArray,
   callback: (looking: string[], arr: UIArray) => void,
@@ -28,4 +54,5 @@ export const bubbleSort = async (
     }
   }
   callback([], _arr);
+  return _arr;
 };

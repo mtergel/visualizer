@@ -1,4 +1,5 @@
 import { HiCog } from "@react-icons/all-files/hi/HiCog";
+import { HiOutlineInformationCircle } from "@react-icons/all-files/hi/HiOutlineInformationCircle";
 import clsx from "clsx";
 import Button from "components/Button/Button";
 import Dialog, {
@@ -9,7 +10,12 @@ import Dialog, {
 import IconButton from "components/IconButton/IconButton";
 import Slider from "components/Slider/Slider";
 import Tooltip from "components/Tooltip/Tooltip";
-import { bubbleSort, checkSorted, selectionSort } from "core/sorting";
+import {
+  bubbleSort,
+  checkSorted,
+  insertionSort,
+  selectionSort,
+} from "core/sorting";
 import {
   ChangeEvent,
   Dispatch,
@@ -21,7 +27,6 @@ import {
 import { useResizeDetector } from "react-resize-detector";
 import { UIArray } from "types";
 import { generateRandomArray } from "utils/arrayUtils";
-import { HiOutlineInformationCircle } from "@react-icons/all-files/hi/HiOutlineInformationCircle";
 
 interface SortingProps {}
 
@@ -100,6 +105,14 @@ const Sorting: React.FC<SortingProps> = () => {
           );
           break;
         }
+        case AlgoKey.INSERTION: {
+          sortedArr = await insertionSort(
+            randomArray,
+            callback,
+            DEFAULT_TIMEOUT
+          );
+          break;
+        }
       }
 
       let t1 = performance.now();
@@ -150,10 +163,7 @@ const Sorting: React.FC<SortingProps> = () => {
               >
                 <div className="flex items-center gap-1">
                   <HiOutlineInformationCircle />
-                  <p>
-                    Sorted in:{" "}
-                    {time ? `${Math.round(time * 0.001)}s` : "Not timed."}
-                  </p>
+                  <p>Sorted in: {time ? `${time}ms` : "Not timed."}</p>
                 </div>
               </Tooltip>
 

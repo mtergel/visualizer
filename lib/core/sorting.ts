@@ -85,3 +85,32 @@ export const selectionSort = async (
   callback([], _arr);
   return _arr;
 };
+
+export const insertionSort = async (
+  arr: UIArray,
+  callback: (looking: string[], arr: UIArray) => void,
+  delay: number
+) => {
+  let _arr = [...arr];
+
+  for (let i = 1; i < _arr.length; i++) {
+    let current = _arr[i];
+    let j = i - 1;
+
+    callback([current.id, _arr[j].id], _arr);
+    await timeout(delay);
+
+    while (j >= 0 && current.value < _arr[j].value) {
+      callback([current.id, _arr[j].id], _arr);
+      await timeout(delay);
+
+      [_arr[j + 1], _arr[j]] = [_arr[j], _arr[j + 1]];
+      callback([_arr[j].id, _arr[j + 1].id], _arr);
+      await timeout(delay);
+      j--;
+    }
+  }
+
+  callback([], _arr);
+  return _arr;
+};

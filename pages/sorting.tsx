@@ -56,7 +56,7 @@ const Sorting: React.FC<SortingProps> = () => {
   } else if (arrayLen > 40) {
     DEFAULT_TIMEOUT = 5;
   } else {
-    DEFAULT_TIMEOUT = 30;
+    DEFAULT_TIMEOUT = 40;
   }
 
   useEffect(() => {
@@ -144,13 +144,16 @@ const Sorting: React.FC<SortingProps> = () => {
                 contentClassname="py-1 px-2 text-sm"
                 content={
                   <p>
-                    This value is not an accurate presentation of this function.
+                    This value is not an accurate presentation of the algorithm.
                   </p>
                 }
               >
                 <div className="flex items-center gap-1">
                   <HiOutlineInformationCircle />
-                  <p>Sorted in: {time ? `${time * 0.001}s` : "Not timed."}</p>
+                  <p>
+                    Sorted in:{" "}
+                    {time ? `${Math.round(time * 0.001)}s` : "Not timed."}
+                  </p>
                 </div>
               </Tooltip>
 

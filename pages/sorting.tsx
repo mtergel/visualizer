@@ -8,6 +8,7 @@ import Dialog, {
 } from "components/Dialog/Dialog";
 import IconButton from "components/IconButton/IconButton";
 import Slider from "components/Slider/Slider";
+import Tooltip from "components/Tooltip/Tooltip";
 import { bubbleSort, checkSorted } from "core/sorting";
 import {
   ChangeEvent,
@@ -20,6 +21,7 @@ import {
 import { useResizeDetector } from "react-resize-detector";
 import { UIArray } from "types";
 import { generateRandomArray } from "utils/arrayUtils";
+import { HiOutlineInformationCircle } from "@react-icons/all-files/hi/HiOutlineInformationCircle";
 
 interface SortingProps {}
 
@@ -27,7 +29,6 @@ const ARRAY_MAX = 600;
 const ARRAY_INIT = 100;
 const ARRAY_LOWER = 1;
 const ARRAY_UPPER = 100;
-const DEFAULT_TIMEOUT = 50;
 
 enum AlgoKey {
   "BUBBLE" = "Bubble Sort",
@@ -47,6 +48,16 @@ const Sorting: React.FC<SortingProps> = () => {
   const [looking, setLooking] = useState<string[]>([]);
   const { width, height, ref } = useResizeDetector();
   const [state, setState] = useState<StateType>("INIT");
+  const [time, setTime] = useState<number>();
+
+  let DEFAULT_TIMEOUT = 1;
+  if (arrayLen > 100) {
+    DEFAULT_TIMEOUT = 0;
+  } else if (arrayLen > 40) {
+    DEFAULT_TIMEOUT = 5;
+  } else {
+    DEFAULT_TIMEOUT = 30;
+  }
 
   useEffect(() => {
     const generated = generateRandomArray(ARRAY_INIT, ARRAY_LOWER, ARRAY_UPPER);
@@ -67,30 +78,33 @@ const Sorting: React.FC<SortingProps> = () => {
       const callback = (looking: string[], arr: UIArray) => {
         setLooking(looking);
         setRandomArray(arr);
+        return state === "INIT";
       };
       setState("SORTING");
+
+      let t0 = performance.now();
       const sortedArr = await bubbleSort(
         randomArray,
         callback,
         DEFAULT_TIMEOUT
       );
+      let t1 = performance.now();
+      setTime(t1 - t0);
       setState("CHECKING");
       const checkCallback = (looking: string[]) => {
         setLooking(looking);
       };
 
-      await checkSorted(sortedArr, checkCallback, DEFAULT_TIMEOUT + 50);
+      await checkSorted(sortedArr, checkCallback, DEFAULT_TIMEOUT + 10);
       setState("FINISHED");
     }
-  }, [randomArray]);
-  let activeColor =
-    "bg-indigo-500 bg-opacity-100 dark:bg-indigo-300 dark:bg-opacity-100";
+  }, [randomArray, state, DEFAULT_TIMEOUT]);
+
+  let activeColor = "bg-indigo-500 dark:bg-indigo-300";
   if (state === "CHECKING") {
-    activeColor =
-      "bg-teal-500 bg-opacity-100 dark:bg-teal-300 dark:bg-opacity-100";
+    activeColor = "bg-teal-500 dark:bg-teal-300";
   } else if (state === "FINISHED") {
-    activeColor =
-      "bg-emerald-500 bg-opacity-100 dark:bg-emerald-300 dark:bg-opacity-100";
+    activeColor = "bg-emerald-500 dark:bg-emerald-300";
   }
 
   return (
@@ -106,6 +120,36 @@ const Sorting: React.FC<SortingProps> = () => {
               handleSort={handleSort}
               setArrayLen={setArrayLen}
             />
+          )}
+          {state === "SORTING" && <p className="text-sm">Sorting...</p>}
+          {state === "CHECKING" && <p className="text-sm">Checking...</p>}
+          {state === "FINISHED" && (
+            <div className="flex items-center gap-3">
+              <Tooltip
+                openDelay={100}
+                contentClassname="py-1 px-2 text-sm"
+                content={
+                  <p>
+                    This value is not an accurate presentation of this function.
+                  </p>
+                }
+              >
+                <div className="flex items-center gap-1">
+                  <HiOutlineInformationCircle />
+                  <p>Sorted in: {time ? `${time * 0.001}s` : "Not timed."}</p>
+                </div>
+              </Tooltip>
+
+              <Button
+                color="primary"
+                onClick={() => {
+                  handleGenerateNew(arrayLen);
+                  setState("INIT");
+                }}
+              >
+                New
+              </Button>
+            </div>
           )}
         </div>
       </div>
@@ -125,8 +169,10 @@ const Sorting: React.FC<SortingProps> = () => {
                     width: `${100 / randomArray.length}%`,
                   }}
                   className={clsx(
-                    "bg-black bg-opacity-10 dark:bg-white dark:bg-opacity-20 rounded-t-full flex-shrink-0",
-                    looking.includes(i.id) && activeColor
+                    " rounded-t-full flex-shrink-0",
+                    looking.includes(i.id)
+                      ? activeColor
+                      : "bg-black bg-opacity-10 dark:bg-white dark:bg-opacity-20"
                   )}
                 />
               ))

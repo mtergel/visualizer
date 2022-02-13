@@ -56,3 +56,32 @@ export const bubbleSort = async (
   callback([], _arr);
   return _arr;
 };
+
+export const selectionSort = async (
+  arr: UIArray,
+  callback: (looking: string[], arr: UIArray) => void,
+  delay: number
+) => {
+  let _arr = [...arr];
+  let minPos = 0;
+
+  for (let i = 0; i < _arr.length - 1; i++) {
+    minPos = i;
+    for (let j = i + 1; j < _arr.length; j++) {
+      callback([_arr[j].id, _arr[minPos].id], _arr);
+      await timeout(delay);
+      if (_arr[j].value < _arr[minPos].value) {
+        minPos = j;
+      }
+    }
+
+    if (minPos != i) {
+      [_arr[minPos], _arr[i]] = [_arr[i], _arr[minPos]];
+      callback([_arr[minPos].id, _arr[i].id], _arr);
+      await timeout(delay);
+    }
+  }
+
+  callback([], _arr);
+  return _arr;
+};

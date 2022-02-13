@@ -9,7 +9,7 @@ import Dialog, {
 import IconButton from "components/IconButton/IconButton";
 import Slider from "components/Slider/Slider";
 import Tooltip from "components/Tooltip/Tooltip";
-import { bubbleSort, checkSorted } from "core/sorting";
+import { bubbleSort, checkSorted, selectionSort } from "core/sorting";
 import {
   ChangeEvent,
   Dispatch,
@@ -83,11 +83,25 @@ const Sorting: React.FC<SortingProps> = () => {
       setState("SORTING");
 
       let t0 = performance.now();
-      const sortedArr = await bubbleSort(
-        randomArray,
-        callback,
-        DEFAULT_TIMEOUT
-      );
+      // if (sortingAlgo === AlgoKey.BUBBLE) {
+
+      // }
+      let sortedArr: UIArray = [];
+      switch (sortingAlgo) {
+        case AlgoKey.BUBBLE: {
+          sortedArr = await bubbleSort(randomArray, callback, DEFAULT_TIMEOUT);
+          break;
+        }
+        case AlgoKey.SELECTION: {
+          sortedArr = await selectionSort(
+            randomArray,
+            callback,
+            DEFAULT_TIMEOUT
+          );
+          break;
+        }
+      }
+
       let t1 = performance.now();
       setTime(t1 - t0);
       setState("CHECKING");
@@ -98,7 +112,7 @@ const Sorting: React.FC<SortingProps> = () => {
       await checkSorted(sortedArr, checkCallback, DEFAULT_TIMEOUT + 10);
       setState("FINISHED");
     }
-  }, [randomArray, state, DEFAULT_TIMEOUT]);
+  }, [randomArray, state, DEFAULT_TIMEOUT, sortingAlgo]);
 
   let activeColor = "bg-indigo-500 dark:bg-indigo-300";
   if (state === "CHECKING") {
@@ -269,13 +283,13 @@ const SortOptionsToolbar: React.FC<SortOptionsToolbarProps> = ({
                     aria-label="select sorting algorithm"
                     value={sortingAlgo}
                     onChange={handleAlgoChange}
-                    className="bg-transparent border border-skin-base rounded-lg font-semibold focus:ring focus:ring-gray-300"
+                    className="bg-transparent border border-skin-base rounded-lg font-semibold focus:outline-none focus:border-transparent focus:ring focus:ring-indigo-500 dark:focus:ring-indigo-300"
                   >
                     {Object.entries(AlgoKey).map((pair) => (
                       <option
                         key={pair[0]}
                         value={pair[1]}
-                        className="font-normal"
+                        className="font-normal text-sm bg-skin-base text-skin-base"
                       >
                         {pair[1]}
                       </option>

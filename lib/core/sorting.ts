@@ -105,12 +105,71 @@ export const insertionSort = async (
       await timeout(delay);
 
       [_arr[j + 1], _arr[j]] = [_arr[j], _arr[j + 1]];
-      callback([_arr[j].id, _arr[j + 1].id], _arr);
-      await timeout(delay);
       j--;
     }
   }
 
   callback([], _arr);
   return _arr;
+};
+
+// main
+export const mergeSort = async (
+  arr: UIArray,
+  callback: (looking: string[], arr: UIArray) => void,
+  delay: number
+) => {
+  let _arr = [...arr];
+  await mergeSortHelper(_arr, callback, delay, 0, _arr.length);
+  callback([], _arr);
+  return _arr;
+};
+
+// divider
+const mergeSortHelper = async (
+  arr: UIArray,
+  callback: (looking: string[], arr: UIArray) => void,
+  delay: number,
+  l: number,
+  r: number
+) => {
+  if (r - l < 2) return;
+
+  let mid = l + Math.floor((r - l) / 2);
+  await mergeSortHelper(arr, callback, delay, l, mid);
+  await mergeSortHelper(arr, callback, delay, mid, r);
+
+  await merger(arr, callback, delay, l, mid, r);
+};
+
+const merger = async (
+  arr: UIArray,
+  callback: (looking: string[], arr: UIArray) => void,
+  delay: number,
+  leftIndex: number,
+  mid: number,
+  rightIndex: number
+) => {
+  let result = [];
+  let l = leftIndex,
+    r = mid;
+  while (l < mid && r < rightIndex) {
+    callback([arr[l].id, arr[r].id], arr);
+    await timeout(delay);
+    if (arr[l].value < arr[r].value) {
+      result.push(arr[l++]);
+    } else {
+      result.push(arr[r++]);
+    }
+  }
+  result = result.concat(arr.slice(l, mid)).concat(arr.slice(r, rightIndex));
+  for (let i = 0; i < rightIndex - leftIndex; i++) {
+    arr[leftIndex + i] = {
+      id: arr[leftIndex + i].id,
+      value: result[i].value,
+    };
+
+    callback([arr[leftIndex + i].id], arr);
+    await timeout(delay);
+  }
 };

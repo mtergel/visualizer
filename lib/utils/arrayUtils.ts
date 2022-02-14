@@ -1,4 +1,5 @@
 import { nanoid } from "nanoid";
+import { UIArray, UIArrayElement } from "types";
 
 /**
  * Generates an array of integers with random values inclusive from lowerBound to upperBound

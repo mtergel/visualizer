@@ -14,6 +14,7 @@ import {
   bubbleSort,
   checkSorted,
   insertionSort,
+  mergeSort,
   selectionSort,
 } from "core/sorting";
 import {
@@ -30,7 +31,7 @@ import { generateRandomArray } from "utils/arrayUtils";
 
 interface SortingProps {}
 
-const ARRAY_MAX = 600;
+const ARRAY_MAX = 300;
 const ARRAY_INIT = 100;
 const ARRAY_LOWER = 1;
 const ARRAY_UPPER = 100;
@@ -88,9 +89,6 @@ const Sorting: React.FC<SortingProps> = () => {
       setState("SORTING");
 
       let t0 = performance.now();
-      // if (sortingAlgo === AlgoKey.BUBBLE) {
-
-      // }
       let sortedArr: UIArray = [];
       switch (sortingAlgo) {
         case AlgoKey.BUBBLE: {
@@ -113,6 +111,11 @@ const Sorting: React.FC<SortingProps> = () => {
           );
           break;
         }
+        case AlgoKey.MERGE: {
+          sortedArr = await mergeSort(randomArray, callback, DEFAULT_TIMEOUT);
+          console.log(sortedArr);
+          break;
+        }
       }
 
       let t1 = performance.now();
@@ -122,7 +125,7 @@ const Sorting: React.FC<SortingProps> = () => {
         setLooking(looking);
       };
 
-      await checkSorted(sortedArr, checkCallback, DEFAULT_TIMEOUT + 10);
+      await checkSorted(sortedArr, checkCallback, DEFAULT_TIMEOUT);
       setState("FINISHED");
     }
   }, [randomArray, state, DEFAULT_TIMEOUT, sortingAlgo]);

@@ -138,7 +138,6 @@ const mergeSortHelper = async (
   let mid = l + Math.floor((r - l) / 2);
   await mergeSortHelper(arr, callback, delay, l, mid);
   await mergeSortHelper(arr, callback, delay, mid, r);
-
   await merger(arr, callback, delay, l, mid, r);
 };
 

@@ -1,5 +1,6 @@
 import { HiCog } from "@react-icons/all-files/hi/HiCog";
 import { HiOutlineInformationCircle } from "@react-icons/all-files/hi/HiOutlineInformationCircle";
+import { HiOutlineExclamationCircle } from "@react-icons/all-files/hi/HiOutlineExclamationCircle";
 import clsx from "clsx";
 import Button from "components/Button/Button";
 import Dialog, {
@@ -278,6 +279,18 @@ const SortOptionsToolbar: React.FC<SortOptionsToolbarProps> = ({
             </option>
           ))}
         </select>
+        {[AlgoKey.BUBBLE, AlgoKey.SELECTION].includes(sortingAlgo) &&
+          arrayLen >= 50 && (
+            <Tooltip
+              openDelay={100}
+              contentClassname="py-1 px-2 text-sm"
+              content={<p>This might take a while</p>}
+            >
+              <div className="flex items-center gap-1 text-red-500 dark:text-red-300">
+                <HiOutlineExclamationCircle />
+              </div>
+            </Tooltip>
+          )}
       </div>
 
       <div className="flex-shrink-0 flex items-center justify-end gap-2 w-full sm:w-auto">

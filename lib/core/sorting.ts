@@ -113,7 +113,7 @@ export const insertionSort = async (
   return _arr;
 };
 
-// main
+// main merge
 export const mergeSort = async (
   arr: UIArray,
   callback: (looking: string[], arr: UIArray) => void,
@@ -171,4 +171,56 @@ const merger = async (
     callback([arr[leftIndex + i].id], arr);
     await timeout(delay);
   }
+};
+
+// main merge
+export const quickSort = async (
+  arr: UIArray,
+  callback: (looking: string[], arr: UIArray) => void,
+  delay: number
+) => {
+  let _arr = [...arr];
+  await quickSortHelper(_arr, callback, delay, 0, _arr.length - 1);
+  callback([], _arr);
+  return _arr;
+};
+const quickSortHelper = async (
+  arr: UIArray,
+  callback: (looking: string[], arr: UIArray) => void,
+  delay: number,
+  l: number,
+  r: number
+) => {
+  if (l < r) {
+    let pi = await qPartition(arr, callback, delay, l, r);
+
+    await quickSortHelper(arr, callback, delay, l, pi - 1);
+    await quickSortHelper(arr, callback, delay, pi + 1, r);
+  }
+};
+
+const qPartition = async (
+  arr: UIArray,
+  callback: (looking: string[], arr: UIArray) => void,
+  delay: number,
+  l: number,
+  r: number
+) => {
+  let pivot = arr[r];
+  let i = l - 1;
+  for (let j = l; j <= r - 1; j++) {
+    callback([arr[j].id, pivot.id], arr);
+    await timeout(delay);
+    if (arr[j].value < pivot.value) {
+      i++;
+      callback([arr[j].id, arr[i].id, pivot.id], arr);
+      await timeout(delay);
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+  }
+
+  callback([arr[i + 1].id, arr[r].id], arr);
+  await timeout(delay);
+  [arr[i + 1], arr[r]] = [arr[r], arr[i + 1]];
+  return i + 1;
 };

@@ -15,6 +15,7 @@ import {
   checkSorted,
   insertionSort,
   mergeSort,
+  quickSort,
   selectionSort,
 } from "core/sorting";
 import {
@@ -113,7 +114,10 @@ const Sorting: React.FC<SortingProps> = () => {
         }
         case AlgoKey.MERGE: {
           sortedArr = await mergeSort(randomArray, callback, DEFAULT_TIMEOUT);
-          console.log(sortedArr);
+          break;
+        }
+        case AlgoKey.QUICK: {
+          sortedArr = await quickSort(randomArray, callback, DEFAULT_TIMEOUT);
           break;
         }
       }

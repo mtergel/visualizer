@@ -4,6 +4,7 @@
   --color-border-base: #dadce0;
   --color-background-base: #ffffff;
   --color-background-offset: #ffffff;
+  --color-background-secondary: #f8f9fa;
 }
 .dark {
   --color-text-base: #e8eaed;
@@ -11,6 +12,7 @@
   --color-border-base: #5f6368;
   --color-background-base: #202124;
   --color-background-offset: #303134;
+  --color-background-secondary: #3c4043;
 }
 
 @tailwind base;
@@ -23,8 +25,15 @@
   ::after {
     @apply border-skin-base;
   }
+  html {
+    @apply h-full;
+  }
   body {
-    @apply text-skin-base bg-skin-base;
+    @apply text-skin-base bg-skin-base h-full;
+  }
+
+  div#__next {
+    @apply h-full;
   }
 }
 
@@ -37,4 +46,6 @@
   @import "components/Dialog/dialog.scss";
   @import "components/RadioGroup/radioGroup.scss";
   @import "components/Drawer/drawer.scss";
+  @import "components/Slider/slider.scss";
+  @import "components/Tooltip/tooltip.scss";
 }

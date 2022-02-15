@@ -22,10 +22,10 @@ interface LayoutProps {}
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
-    <>
+    <div className="flex flex-col h-full">
       <Header />
-      <main>{children}</main>
-    </>
+      <main className="flex-grow">{children}</main>
+    </div>
   );
 };
 
@@ -34,7 +34,7 @@ const Header: React.FC<{}> = () => {
 
   return (
     <header className="flex items-center h-16 border-b">
-      <div className="w-[72px] flex items-center justify-center flex-shrink-0 h-full text-center lg:w-[60px]">
+      <div className="w-[60px] flex items-center justify-center flex-shrink-0 h-full text-center">
         <Drawer
           side="left"
           contentClassname="max-w-[320px]"
@@ -102,7 +102,7 @@ const Header: React.FC<{}> = () => {
             className="hidden md:inline-flex"
           />
 
-          <div className="flex items-center justify-center mx-[14px]">
+          <div className="flex items-center justify-center mx-[14px] md:mr-0">
             <Dialog
               contentClassname="flex flex-col"
               content={<ApperanceTheme />}
@@ -110,7 +110,6 @@ const Header: React.FC<{}> = () => {
               <IconButton
                 aria-label="Change appearance"
                 icon={<CgDarkMode />}
-                variant="ghost"
               />
             </Dialog>
           </div>

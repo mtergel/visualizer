@@ -3,7 +3,7 @@
 }
 
 .radio-item-indicator {
-  @apply w-full h-full flex items-center justify-center relative;
+  @apply w-full h-full flex items-center justify-center relative focus:outline-none;
 
   &::after {
     content: "";

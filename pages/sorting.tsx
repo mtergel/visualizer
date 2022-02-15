@@ -13,6 +13,7 @@ import Tooltip from "components/Tooltip/Tooltip";
 import {
   bubbleSort,
   checkSorted,
+  heapSort,
   insertionSort,
   mergeSort,
   quickSort,
@@ -120,6 +121,10 @@ const Sorting: React.FC<SortingProps> = () => {
           sortedArr = await quickSort(randomArray, callback, DEFAULT_TIMEOUT);
           break;
         }
+        case AlgoKey.HEAP: {
+          sortedArr = await heapSort(randomArray, callback, DEFAULT_TIMEOUT);
+          break;
+        }
       }
 
       let t1 = performance.now();
@@ -136,7 +141,8 @@ const Sorting: React.FC<SortingProps> = () => {
 
   let activeColor = "bg-indigo-500 dark:bg-indigo-300";
   if (state === "CHECKING") {
-    activeColor = "bg-teal-500 dark:bg-teal-300";
+    activeColor =
+      "bg-emerald-500 bg-opacity-70 dark:bg-emerald-300 dark:bg-opacity-70";
   } else if (state === "FINISHED") {
     activeColor = "bg-emerald-500 dark:bg-emerald-300";
   }

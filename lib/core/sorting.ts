@@ -224,3 +224,55 @@ const qPartition = async (
   [arr[i + 1], arr[r]] = [arr[r], arr[i + 1]];
   return i + 1;
 };
+
+export const heapSort = async (
+  arr: UIArray,
+  callback: (looking: string[], arr: UIArray) => void,
+  delay: number
+) => {
+  let _arr = [...arr];
+  let n = _arr.length;
+
+  const maxHeapify = async (n: number, i: number) => {
+    let largest = i;
+    let l = 2 * i + 1;
+    let r = 2 * i + 2;
+
+    if (l < n) {
+      callback([_arr[l].id, _arr[largest].id], _arr);
+      await timeout(delay);
+      if (_arr[l].value > _arr[largest].value) {
+        largest = l;
+      }
+    }
+
+    if (r < n) {
+      callback([_arr[r].id, _arr[largest].id], _arr);
+      await timeout(delay);
+      if (_arr[r].value > _arr[largest].value) {
+        largest = r;
+      }
+    }
+
+    if (largest != i) {
+      [_arr[i], _arr[largest]] = [_arr[largest], _arr[i]];
+      await maxHeapify(n, largest);
+    }
+  };
+
+  // Build heap
+  for (let i = Math.floor(n / 2 - 1); i >= 0; i--) {
+    await maxHeapify(n, i);
+  }
+
+  for (let i = n - 1; i >= 0; i--) {
+    callback([_arr[0].id, _arr[i].id], _arr);
+    await timeout(delay);
+    [_arr[0], _arr[i]] = [_arr[i], _arr[0]];
+
+    await maxHeapify(i, 0);
+  }
+
+  callback([], _arr);
+  return _arr;
+};

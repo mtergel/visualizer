@@ -1,6 +1,6 @@
 import { HiCog } from "@react-icons/all-files/hi/HiCog";
-import { HiOutlineInformationCircle } from "@react-icons/all-files/hi/HiOutlineInformationCircle";
 import { HiOutlineExclamationCircle } from "@react-icons/all-files/hi/HiOutlineExclamationCircle";
+import { HiOutlineInformationCircle } from "@react-icons/all-files/hi/HiOutlineInformationCircle";
 import clsx from "clsx";
 import Button from "components/Button/Button";
 import Dialog, {

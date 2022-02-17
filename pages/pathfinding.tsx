@@ -1,9 +1,9 @@
 import { AiFillCar } from "@react-icons/all-files/ai/AiFillCar";
+import { FaFlagCheckered } from "@react-icons/all-files/fa/FaFlagCheckered";
 import clsx from "clsx";
 import memoize from "memoize-one";
 import { memo, useState } from "react";
 import { areEqual, FixedSizeGrid as Grid } from "react-window";
-import { FaFlagCheckered } from "@react-icons/all-files/fa/FaFlagCheckered";
 
 interface PathFindingProps {}
 
@@ -14,6 +14,7 @@ const enum NodeType {
   "Normal" = 0,
   "Start",
   "End",
+  "Wall",
 }
 
 let initialGrid = Array.from({ length: ROWS }, () =>
@@ -23,15 +24,26 @@ let initialGrid = Array.from({ length: ROWS }, () =>
 initialGrid[4][4] = NodeType.Start;
 initialGrid[12][36] = NodeType.End;
 
-const wallColor = "bg-skin-secondary";
+// Test
+initialGrid[6][6] = NodeType.Wall;
 
-const createItemData = memoize((grid) => ({
+const wallColor = "bg-gray-600 dark:bg-gray-400";
+
+const createItemData = memoize((grid, isMouseDown, handleSetGrid) => ({
   grid,
+  isMouseDown,
+  handleSetGrid,
 }));
 
 const PathFinding: React.FC<PathFindingProps> = () => {
   const [grid, setGrid] = useState(initialGrid);
-  const itemData = createItemData(grid);
+  const [isMouseDown, setIsMouseDown] = useState(false);
+
+  const handleSetGrid = (grid: NodeType[][]) => {
+    setGrid(grid);
+  };
+
+  const itemData = createItemData(grid, isMouseDown, handleSetGrid);
 
   return (
     <div className="flex flex-col h-full">
@@ -41,7 +53,11 @@ const PathFinding: React.FC<PathFindingProps> = () => {
         </div>
       </div>
       <div className="flex-grow">
-        <div className="h-full w-full flex items-center justify-center">
+        <div
+          className="h-full w-full flex items-center justify-center"
+          onMouseDown={() => setIsMouseDown(true)}
+          onMouseUp={() => setIsMouseDown(false)}
+        >
           <Grid
             columnCount={COLS}
             columnWidth={36}
@@ -60,17 +76,35 @@ const PathFinding: React.FC<PathFindingProps> = () => {
 };
 
 const Cell = memo((props: any) => {
-  const { grid }: { grid: NodeType[][] } = props.data;
+  const {
+    grid,
+    isMouseDown,
+    handleSetGrid,
+  }: {
+    grid: NodeType[][];
+    isMouseDown: boolean;
+    handleSetGrid: (grid: NodeType[][]) => void;
+  } = props.data;
   const { columnIndex, rowIndex }: { columnIndex: number; rowIndex: number } =
     props;
   const cell = grid[rowIndex][columnIndex];
+  const handleMouseOver = () => {
+    if (isMouseDown) {
+      let copy = [...grid];
+      copy[rowIndex][columnIndex] = NodeType.Wall;
+      handleSetGrid(copy);
+    }
+  };
+
   return (
     <div
       style={props.style}
+      onMouseOver={cell === NodeType.Normal ? handleMouseOver : undefined}
       className={clsx(
         "border-t border-l flex items-center justify-center",
         props.rowIndex === ROWS - 1 && "border-b",
-        props.columnIndex === COLS - 1 && "border-r"
+        props.columnIndex === COLS - 1 && "border-r",
+        cell === NodeType.Wall && wallColor
       )}
     >
       {cell === NodeType.Start && (

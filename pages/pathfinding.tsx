@@ -11,7 +11,7 @@ const ROWS = 16;
 const COLS = 40;
 
 const enum NodeType {
-  "Normal" = 0,
+  "Normal",
   "Start",
   "End",
   "Wall",
@@ -23,9 +23,6 @@ let initialGrid = Array.from({ length: ROWS }, () =>
 
 initialGrid[4][4] = NodeType.Start;
 initialGrid[12][36] = NodeType.End;
-
-// Test
-initialGrid[6][6] = NodeType.Wall;
 
 const wallColor = "bg-gray-600 dark:bg-gray-400";
 
@@ -60,11 +57,11 @@ const PathFinding: React.FC<PathFindingProps> = () => {
         >
           <Grid
             columnCount={COLS}
-            columnWidth={36}
-            height={576}
+            columnWidth={30}
+            height={480}
             rowCount={ROWS}
-            rowHeight={36}
-            width={1440}
+            rowHeight={30}
+            width={1200}
             itemData={itemData}
           >
             {Cell}

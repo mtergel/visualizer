@@ -21,12 +21,14 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-resize-detector": "^7.0.0",
+    "react-window": "^1.8.6",
     "sass": "^1.49.7"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.4.0",
     "@types/node": "17.0.17",
     "@types/react": "17.0.39",
+    "@types/react-window": "^1.8.5",
     "autoprefixer": "^10.4.2",
     "eslint": "8.9.0",
     "eslint-config-next": "12.0.10",

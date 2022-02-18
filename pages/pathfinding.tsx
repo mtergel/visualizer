@@ -17,8 +17,6 @@ enum AlgoKey {
 
 const ROWS = 16;
 const COLS = 40;
-// const ROWS = 4;
-// const COLS = 8;
 
 type DragNode = {
   type: NodeType;

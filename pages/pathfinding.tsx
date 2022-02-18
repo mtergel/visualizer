@@ -118,7 +118,7 @@ const PathFinding: React.FC<PathFindingProps> = () => {
             color="primary"
             className="px-8 w-full sm:w-auto"
           >
-            Visualize
+            Find Path
           </Button>
         </div>
       </div>

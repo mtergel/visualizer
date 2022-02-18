@@ -36,7 +36,7 @@ let initialGrid = Array.from({ length: ROWS }, () =>
 initialGrid[4][4] = NodeType.Start;
 initialGrid[12][36] = NodeType.End;
 
-const wallColor = "bg-gray-600 dark:bg-gray-500";
+const wallColor = "bg-gray-400 dark:bg-gray-500";
 
 const createItemData = memoize(
   (grid, isMouseDown, dragNode, handleSetGrid, handleSetDragNode) => ({
@@ -178,7 +178,7 @@ const Cell = memo((props: any) => {
         props.columnIndex === COLS - 1 && "border-r",
         !isDraggingNodeHere && cell === NodeType.Wall && wallColor,
         DraggableNodes.includes(cell) && "cursor-grab",
-        isDraggingNodeHere && "bg-gray-100/20 opacity-60"
+        isDraggingNodeHere && "bg-gray-400 dark:bg-gray-100/20 opacity-60"
       )}
     >
       {isDraggingNodeHere ? (

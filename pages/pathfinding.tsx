@@ -1,14 +1,17 @@
 import { AiFillCar } from "@react-icons/all-files/ai/AiFillCar";
 import { FaFlagCheckered } from "@react-icons/all-files/fa/FaFlagCheckered";
 import clsx from "clsx";
-import IconButton from "components/IconButton/IconButton";
+import Button from "components/Button/Button";
 import memoize from "memoize-one";
-import React, { memo, useState } from "react";
+import React, { memo, useCallback, useState } from "react";
 import { areEqual, FixedSizeGrid as Grid } from "react-window";
-import { RiPencilRuler2Line } from "@react-icons/all-files/ri/RiPencilRuler2Line";
-import * as Toolbar from "@radix-ui/react-toolbar";
+import { useImmer } from "use-immer";
 
 interface PathFindingProps {}
+
+enum AlgoKey {
+  "DIJKSTRA" = "Dijkstra",
+}
 
 const ROWS = 16;
 const COLS = 40;
@@ -33,45 +36,89 @@ let initialGrid = Array.from({ length: ROWS }, () =>
   Array.from({ length: COLS }, () => NodeType.Normal)
 );
 
+let initialVisited = Array.from({ length: ROWS }, () =>
+  Array.from({ length: COLS }, () => false)
+);
+
 initialGrid[4][4] = NodeType.Start;
 initialGrid[12][36] = NodeType.End;
 
 const wallColor = "bg-gray-400 dark:bg-gray-500";
 
 const createItemData = memoize(
-  (grid, isMouseDown, dragNode, handleSetGrid, handleSetDragNode) => ({
+  (grid, isMouseDown, dragNode, handleSetNode, handleSetDragNode) => ({
     grid,
     isMouseDown,
     dragNode,
-    handleSetGrid,
+    handleSetNode,
     handleSetDragNode,
   })
 );
 
 const PathFinding: React.FC<PathFindingProps> = () => {
-  const [grid, setGrid] = useState(initialGrid);
+  const [grid, setGrid] = useImmer(initialGrid);
   const [isMouseDown, setIsMouseDown] = useState(false);
   const [dragNode, setDragNode] = useState<DragNode | null>(null);
+  const [selectedAlgo, setSelectedAlgo] = useState<AlgoKey>(AlgoKey.DIJKSTRA);
+  const [visited, setVisited] = useImmer(initialVisited);
 
-  const handleSetGrid = (grid: NodeType[][]) => {
-    setGrid(grid);
-  };
-  const handleSetDragNode = (node: DragNode | null) => {
+  const handleSetDragNode = useCallback((node: DragNode | null) => {
     setDragNode(node);
-  };
+  }, []);
+
+  const handleSetNode = useCallback(
+    (row: number, col: number, type: NodeType) => {
+      setGrid((draft) => {
+        draft[row][col] = type;
+      });
+    },
+    // eslint-disable-next-line
+    []
+  );
 
   const itemData = createItemData(
     grid,
     isMouseDown,
     dragNode,
-    handleSetGrid,
+    handleSetNode,
     handleSetDragNode
   );
+
+  const handleStart = () => {};
 
   return (
     <div className="flex flex-col h-full">
       <div className="h-[4.5rem] bg-skin-secondary border-b">
-        <div className="max-w-screen-2xl mx-auto flex items-center h-full px-4 md:px-[60px]"></div>
+        <div className="max-w-screen-2xl mx-auto flex items-center h-full px-4 md:px-[60px]">
+          <div className="items-center flex-grow gap-3 hidden sm:flex">
+            <select
+              aria-label="select pathfinding algorithm"
+              value={selectedAlgo}
+              onChange={(e) =>
+                setSelectedAlgo(e.currentTarget.value as AlgoKey)
+              }
+              className="bg-transparent border border-skin-base rounded-lg font-semibold focus:outline-none focus:border-transparent focus:ring focus:ring-indigo-500 dark:focus:ring-indigo-300"
+            >
+              {Object.entries(AlgoKey).map((pair) => (
+                <option
+                  key={pair[0]}
+                  value={pair[1]}
+                  className="font-normal text-sm bg-skin-base text-skin-base"
+                >
+                  {pair[1]}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <Button
+            onClick={handleStart}
+            color="primary"
+            className="px-8 w-full sm:w-auto"
+          >
+            Visualize
+          </Button>
+        </div>
       </div>
       <div className="flex-grow">
         <div
@@ -104,13 +151,13 @@ const Cell = memo((props: any) => {
     grid,
     isMouseDown,
     dragNode,
-    handleSetGrid,
+    handleSetNode,
     handleSetDragNode,
   }: {
     grid: NodeType[][];
     isMouseDown: boolean;
     dragNode: DragNode | null;
-    handleSetGrid: (grid: NodeType[][]) => void;
+    handleSetNode: (row: number, col: number, type: NodeType) => void;
     handleSetDragNode: (node: DragNode | null) => void;
   } = props.data;
   const { columnIndex, rowIndex }: { columnIndex: number; rowIndex: number } =
@@ -125,18 +172,13 @@ const Cell = memo((props: any) => {
           row: rowIndex,
         });
       } else if (cell === NodeType.Normal) {
-        let copy = [...grid];
-        copy[rowIndex][columnIndex] = NodeType.Wall;
-        handleSetGrid(copy);
+        handleSetNode(rowIndex, columnIndex, NodeType.Wall);
       }
     }
   };
   const handleMouseDown = () => {
     if (cell === NodeType.Normal) {
-      // set normal to wall
-      let copy = [...grid];
-      copy[rowIndex][columnIndex] = NodeType.Wall;
-      handleSetGrid(copy);
+      handleSetNode(rowIndex, columnIndex, NodeType.Wall);
     } else if (DraggableNodes.includes(cell)) {
       handleSetDragNode({
         type: cell,
@@ -155,10 +197,8 @@ const Cell = memo((props: any) => {
         return;
       }
 
-      let copy = [...grid];
-      copy[dragNode.initRow][dragNode.initCol] = NodeType.Normal;
-      copy[rowIndex][columnIndex] = dragNode.type;
-      handleSetGrid(copy);
+      handleSetNode(dragNode.initRow, dragNode.initCol, NodeType.Normal);
+      handleSetNode(rowIndex, columnIndex, dragNode.type);
       handleSetDragNode(null);
     }
   };

@@ -4,3 +4,11 @@ export type UIArrayElement = {
 };
 
 export type UIArray = UIArrayElement[];
+
+export const enum NodeType {
+  "Normal",
+  "Start",
+  "End",
+  "Wall",
+  "Visited",
+}

@@ -2,9 +2,11 @@ import { AiFillCar } from "@react-icons/all-files/ai/AiFillCar";
 import { FaFlagCheckered } from "@react-icons/all-files/fa/FaFlagCheckered";
 import clsx from "clsx";
 import Button from "components/Button/Button";
+import { bfs } from "core/pathfinding";
 import memoize from "memoize-one";
 import React, { memo, useCallback, useState } from "react";
 import { areEqual, FixedSizeGrid as Grid } from "react-window";
+import { NodeType } from "types";
 import { useImmer } from "use-immer";
 
 interface PathFindingProps {}
@@ -15,13 +17,9 @@ enum AlgoKey {
 
 const ROWS = 16;
 const COLS = 40;
+// const ROWS = 4;
+// const COLS = 8;
 
-const enum NodeType {
-  "Normal",
-  "Start",
-  "End",
-  "Wall",
-}
 type DragNode = {
   type: NodeType;
   row: number;
@@ -40,17 +38,28 @@ let initialVisited = Array.from({ length: ROWS }, () =>
   Array.from({ length: COLS }, () => false)
 );
 
-initialGrid[4][4] = NodeType.Start;
-initialGrid[12][36] = NodeType.End;
+// initialGrid[4][4] = NodeType.Start;
+initialGrid[2][4] = NodeType.Start;
+// initialGrid[12][36] = NodeType.End;
+initialGrid[4][12] = NodeType.End;
 
-const wallColor = "bg-gray-400 dark:bg-gray-500";
+const wallColor = "bg-black dark:bg-slate-600";
 
 const createItemData = memoize(
-  (grid, isMouseDown, dragNode, visited, handleSetNode, handleSetDragNode) => ({
+  (
     grid,
     isMouseDown,
     dragNode,
     visited,
+    path,
+    handleSetNode,
+    handleSetDragNode
+  ) => ({
+    grid,
+    isMouseDown,
+    dragNode,
+    visited,
+    path,
     handleSetNode,
     handleSetDragNode,
   })
@@ -62,6 +71,7 @@ const PathFinding: React.FC<PathFindingProps> = () => {
   const [dragNode, setDragNode] = useState<DragNode | null>(null);
   const [selectedAlgo, setSelectedAlgo] = useState<AlgoKey>(AlgoKey.DIJKSTRA);
   const [visited, setVisited] = useImmer(initialVisited);
+  const [path, setPath] = useState<Set<string>>(new Set());
 
   const handleSetDragNode = useCallback((node: DragNode | null) => {
     setDragNode(node);
@@ -77,16 +87,30 @@ const PathFinding: React.FC<PathFindingProps> = () => {
     []
   );
 
+  const handleSetVisited = useCallback(
+    (row: number, col: number, value: boolean) => {
+      setVisited((draft) => {
+        draft[row][col] = value;
+      });
+    },
+    // eslint-disable-next-line
+    []
+  );
+
   const itemData = createItemData(
     grid,
     isMouseDown,
     dragNode,
     visited,
+    path,
     handleSetNode,
     handleSetDragNode
   );
 
-  const handleStart = () => {};
+  const handleStart = async () => {
+    const shortest = await bfs(grid, visited, handleSetVisited);
+    setPath(shortest);
+  };
 
   return (
     <div className="flex flex-col h-full">
@@ -139,6 +163,7 @@ const PathFinding: React.FC<PathFindingProps> = () => {
             rowHeight={30}
             width={1200}
             itemData={itemData}
+            className="dark:bg-slate-900"
           >
             {Cell}
           </Grid>
@@ -154,6 +179,7 @@ const Cell = memo((props: any) => {
     isMouseDown,
     dragNode,
     visited,
+    path,
     handleSetNode,
     handleSetDragNode,
   }: {
@@ -161,6 +187,7 @@ const Cell = memo((props: any) => {
     isMouseDown: boolean;
     dragNode: DragNode | null;
     visited: Boolean[][];
+    path: Set<string>;
     handleSetNode: (row: number, col: number, type: NodeType) => void;
     handleSetDragNode: (node: DragNode | null) => void;
   } = props.data;
@@ -214,6 +241,18 @@ const Cell = memo((props: any) => {
   const isDraggingNodeHere =
     dragNode && rowIndex === dragNode.row && columnIndex === dragNode.col;
 
+  const getNodeColor = () => {
+    if (path.has(`${rowIndex}-${columnIndex}`)) {
+      return "bg-indigo-500 dark:bg-indigo-400";
+    }
+
+    if (visited[rowIndex][columnIndex]) {
+      return "bg-orange-200 dark:bg-orange-200/90";
+    }
+
+    return null;
+  };
+
   return (
     <div
       style={props.style}
@@ -221,13 +260,13 @@ const Cell = memo((props: any) => {
       onMouseOver={handleMouseOver}
       onMouseUp={handleMouseUp}
       className={clsx(
-        "border-t border-l flex items-center justify-center transition-colors",
+        "border-t border-l border-black dark:border-slate-600 flex items-center justify-center transition-colors",
         rowIndex === ROWS - 1 && "border-b",
         columnIndex === COLS - 1 && "border-r",
         !isDraggingNodeHere && cell === NodeType.Wall && wallColor,
         DraggableNodes.includes(cell) && "cursor-grab",
         isDraggingNodeHere && "bg-gray-400 dark:bg-gray-100/20 opacity-60",
-        visited[rowIndex][columnIndex] && "bg-orange-500 dark:bg-orange-300"
+        getNodeColor()
       )}
     >
       {isDraggingNodeHere ? (
@@ -242,13 +281,11 @@ const Cell = memo((props: any) => {
 const RenderNodeType: React.FC<{ nodeType: NodeType }> = ({ nodeType }) => {
   switch (nodeType) {
     case NodeType.Start: {
-      return <AiFillCar className="h-7 w-7 dark:text-indigo-300" />;
+      return <AiFillCar className="h-7 w-7 text-black dark:text-white" />;
     }
 
     case NodeType.End: {
-      return (
-        <FaFlagCheckered className="h-6 w-6 text-green-700 dark:text-green-300" />
-      );
+      return <FaFlagCheckered className="h-6 w-6 text-black dark:text-white" />;
     }
 
     default: {

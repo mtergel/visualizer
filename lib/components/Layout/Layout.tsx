@@ -33,7 +33,7 @@ const Header: React.FC<{}> = () => {
   const { isOpen, onClose, onOpen, setIsOpen } = useDisclosure();
 
   return (
-    <header className="flex items-center h-16 border-b">
+    <header className="flex items-center h-16 flex-shrink-0 border-b">
       <div className="w-[60px] flex items-center justify-center flex-shrink-0 h-full text-center">
         <Drawer
           side="left"
@@ -42,7 +42,7 @@ const Header: React.FC<{}> = () => {
           onOpenChange={setIsOpen}
           content={
             <div className="h-full">
-              <header className="flex items-center h-16 border-b mb-1 pl-6">
+              <header className="flex items-center h-16 flex-shrink-0 border-b mb-1 pl-6">
                 <Link href="/" passHref>
                   <a
                     className="flex flex-row items-center gap-2"

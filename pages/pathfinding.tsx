@@ -43,7 +43,7 @@ initialGrid[2][4] = NodeType.Start;
 // initialGrid[12][36] = NodeType.End;
 initialGrid[4][12] = NodeType.End;
 
-const wallColor = "bg-black dark:bg-slate-600";
+const wallColor = "bg-slate-800 dark:bg-gray-600";
 
 const createItemData = memoize(
   (
@@ -135,6 +135,16 @@ const PathFinding: React.FC<PathFindingProps> = () => {
                 </option>
               ))}
             </select>
+            <Button
+              onClick={() => {
+                setPath(new Set());
+                setVisited(initialVisited);
+              }}
+              color="primary"
+              className="px-8 w-full sm:w-auto"
+            >
+              New
+            </Button>
           </div>
 
           <Button
@@ -163,7 +173,6 @@ const PathFinding: React.FC<PathFindingProps> = () => {
             rowHeight={30}
             width={1200}
             itemData={itemData}
-            className="dark:bg-slate-900"
           >
             {Cell}
           </Grid>
@@ -247,7 +256,7 @@ const Cell = memo((props: any) => {
     }
 
     if (visited[rowIndex][columnIndex]) {
-      return "bg-orange-200 dark:bg-orange-200/90";
+      return "bg-orange-300/90 dark:bg-orange-200/90";
     }
 
     return null;
@@ -260,7 +269,7 @@ const Cell = memo((props: any) => {
       onMouseOver={handleMouseOver}
       onMouseUp={handleMouseUp}
       className={clsx(
-        "border-t border-l border-black dark:border-slate-600 flex items-center justify-center transition-colors",
+        "border-t border-l border-slate-800 dark:border-slate-500 flex items-center justify-center transition-colors",
         rowIndex === ROWS - 1 && "border-b",
         columnIndex === COLS - 1 && "border-r",
         !isDraggingNodeHere && cell === NodeType.Wall && wallColor,

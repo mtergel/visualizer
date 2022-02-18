@@ -46,10 +46,11 @@ initialGrid[12][36] = NodeType.End;
 const wallColor = "bg-gray-400 dark:bg-gray-500";
 
 const createItemData = memoize(
-  (grid, isMouseDown, dragNode, handleSetNode, handleSetDragNode) => ({
+  (grid, isMouseDown, dragNode, visited, handleSetNode, handleSetDragNode) => ({
     grid,
     isMouseDown,
     dragNode,
+    visited,
     handleSetNode,
     handleSetDragNode,
   })
@@ -80,6 +81,7 @@ const PathFinding: React.FC<PathFindingProps> = () => {
     grid,
     isMouseDown,
     dragNode,
+    visited,
     handleSetNode,
     handleSetDragNode
   );
@@ -151,12 +153,14 @@ const Cell = memo((props: any) => {
     grid,
     isMouseDown,
     dragNode,
+    visited,
     handleSetNode,
     handleSetDragNode,
   }: {
     grid: NodeType[][];
     isMouseDown: boolean;
     dragNode: DragNode | null;
+    visited: Boolean[][];
     handleSetNode: (row: number, col: number, type: NodeType) => void;
     handleSetDragNode: (node: DragNode | null) => void;
   } = props.data;
@@ -173,12 +177,16 @@ const Cell = memo((props: any) => {
         });
       } else if (cell === NodeType.Normal) {
         handleSetNode(rowIndex, columnIndex, NodeType.Wall);
+      } else if (cell === NodeType.Wall) {
+        handleSetNode(rowIndex, columnIndex, NodeType.Normal);
       }
     }
   };
   const handleMouseDown = () => {
     if (cell === NodeType.Normal) {
       handleSetNode(rowIndex, columnIndex, NodeType.Wall);
+    } else if (cell === NodeType.Wall) {
+      handleSetNode(rowIndex, columnIndex, NodeType.Normal);
     } else if (DraggableNodes.includes(cell)) {
       handleSetDragNode({
         type: cell,
@@ -214,11 +222,12 @@ const Cell = memo((props: any) => {
       onMouseUp={handleMouseUp}
       className={clsx(
         "border-t border-l flex items-center justify-center transition-colors",
-        props.rowIndex === ROWS - 1 && "border-b",
-        props.columnIndex === COLS - 1 && "border-r",
+        rowIndex === ROWS - 1 && "border-b",
+        columnIndex === COLS - 1 && "border-r",
         !isDraggingNodeHere && cell === NodeType.Wall && wallColor,
         DraggableNodes.includes(cell) && "cursor-grab",
-        isDraggingNodeHere && "bg-gray-400 dark:bg-gray-100/20 opacity-60"
+        isDraggingNodeHere && "bg-gray-400 dark:bg-gray-100/20 opacity-60",
+        visited[rowIndex][columnIndex] && "bg-orange-500 dark:bg-orange-300"
       )}
     >
       {isDraggingNodeHere ? (

@@ -12,7 +12,7 @@ import Dialog, {
   DialogTitle,
 } from "components/Dialog/Dialog";
 import IconButton from "components/IconButton/IconButton";
-import { bfs } from "core/pathfinding";
+import { bfs, dfs } from "core/pathfinding";
 import memoize from "memoize-one";
 import React, { memo, useCallback, useState } from "react";
 import { areEqual, FixedSizeGrid as Grid } from "react-window";
@@ -166,7 +166,15 @@ const PathFinding: React.FC<PathFindingProps> = () => {
 
   const handleStart = async () => {
     setState("FINDING");
-    const shortest = await bfs(grid, visited, handleSetVisited);
+    let shortest = new Set<string>();
+    switch (selectedAlgo) {
+      case AlgoKey.BFS: {
+        shortest = await bfs(grid, visited, handleSetVisited);
+      }
+      case AlgoKey.DFS: {
+        shortest = await dfs(grid, visited, handleSetVisited);
+      }
+    }
     setPath(shortest);
     setState("FINISHED");
   };
@@ -263,7 +271,7 @@ const PathFinding: React.FC<PathFindingProps> = () => {
                       <div className="h-full flex flex-col">
                         <div className="pt-5 px-6 pb-4 flex-grow">
                           <DialogTitle className="dialog-title">
-                            Grid Options
+                            Grid Generation
                           </DialogTitle>
                           <div className="flex flex-col gap-2 my-3">
                             <Button leftIcon={<GiMaze />} variant="outline">
@@ -277,7 +285,7 @@ const PathFinding: React.FC<PathFindingProps> = () => {
                       </div>
                     }
                   >
-                    <Button variant="outline"> Grid Options</Button>
+                    <Button variant="outline">Grid Generation</Button>
                   </Dialog>
                 </div>
                 <Dialog

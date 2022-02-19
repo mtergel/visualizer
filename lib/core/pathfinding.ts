@@ -1,6 +1,5 @@
 import { NodeType } from "types";
 import { timeout } from "utils/timingUtils";
-import last from "lodash/last";
 
 let directions = [
   [1, 0],
@@ -101,6 +100,73 @@ export const bfs = async (
   while (q.length > 0) {
     let p = q[0];
     q.shift();
+
+    // check 4 directions
+    for (let i = 0; i < 4; i++) {
+      let ny = p.y + directions[i][0];
+      let nx = p.x + directions[i][1];
+
+      if (
+        ny >= 0 &&
+        nx >= 0 &&
+        ny < grid.length &&
+        nx < grid[0].length &&
+        !_visited[ny][nx] &&
+        (grid[ny][nx] === NodeType.Normal || grid[ny][nx] === NodeType.End)
+      ) {
+        // set its parent
+        newGrid[ny][nx] = {
+          ...newGrid[ny][nx],
+          parent: p,
+        };
+        q.push(newGrid[ny][nx]);
+
+        // Mark as visited
+        handleSetVisited(ny, nx, true);
+        _visited[ny][nx] = true;
+
+        // Destination is reached.
+        if (arrayEquals([ny, nx], _end)) {
+          path.add(`${start.y}-${start.x}`);
+          findPath(newGrid[ny][nx]);
+          return path;
+        }
+      }
+    }
+    await timeout(10);
+  }
+
+  return path;
+};
+
+export const dfs = async (
+  grid: NodeType[][],
+  visited: Boolean[][],
+  handleSetVisited: (row: number, col: number, val: boolean) => void
+) => {
+  let q = [] as BFSCell[]; // Stack
+  let _visited = visited.map((arr) => arr.slice());
+  let [start, end, newGrid] = findSE(grid);
+  const _end = [end.y, end.x];
+  // as y-x
+  let path = new Set<string>();
+
+  const findPath = (node: BFSCell) => {
+    if (node.parent) {
+      findPath(node.parent);
+      path.add(`${node.y}-${node.x}`);
+    }
+  };
+
+  // add starting node to queuer
+  q.push(start);
+
+  // Mark as visited
+  handleSetVisited(start.y, start.x, true);
+  _visited[start.y][start.x] = true;
+
+  while (q.length > 0) {
+    let p = q.pop() as BFSCell;
 
     // check 4 directions
     for (let i = 0; i < 4; i++) {

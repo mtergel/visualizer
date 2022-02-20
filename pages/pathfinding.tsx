@@ -241,14 +241,77 @@ const PathFinding: React.FC<PathFindingProps> = () => {
             >
               <IconButton
                 aria-label="info"
-                variant="outline"
                 icon={<HiOutlineInformationCircle />}
               />
             </Dialog>
-
             {state === "INIT" && (
+              <div className="flex flex-grow gap-3">
+                <Dialog
+                  contentClassname="flex flex-col"
+                  content={
+                    <div className="h-full flex flex-col">
+                      <div className="pt-5 px-6 pb-4 flex-grow">
+                        <DialogTitle className="dialog-title">
+                          Settings
+                        </DialogTitle>
+                        <DialogDescription className="dialog-description">
+                          Change pathfinding settings here.
+                        </DialogDescription>
+                        <div className="flex flex-col gap-2 my-3">
+                          <select
+                            aria-label="select pathfinding algorithm"
+                            value={selectedAlgo}
+                            onChange={(e) =>
+                              setSelectedAlgo(e.currentTarget.value as AlgoKey)
+                            }
+                            className="bg-transparent border border-skin-base rounded-lg font-semibold focus:outline-none focus:border-transparent focus:ring focus:ring-indigo-500 dark:focus:ring-indigo-300"
+                          >
+                            {Object.entries(AlgoKey).map((pair) => (
+                              <option
+                                key={pair[0]}
+                                value={pair[1]}
+                                className="font-normal text-sm bg-skin-base text-skin-base"
+                              >
+                                {pair[1]}
+                              </option>
+                            ))}
+                          </select>
+                          <Button leftIcon={<GiMaze />} variant="outline">
+                            Maze
+                          </Button>
+                          <Button leftIcon={<GiBroom />} variant="outline">
+                            Clear walls
+                          </Button>
+                          <DialogClose asChild>
+                            <Button
+                              onClick={handleStart}
+                              className="mt-4"
+                              color="primary"
+                            >
+                              Find path
+                            </Button>
+                          </DialogClose>
+                        </div>
+                      </div>
+                    </div>
+                  }
+                >
+                  <IconButton
+                    aria-label="settings"
+                    icon={<HiCog />}
+                    color="primary"
+                  />
+                </Dialog>
+                <div className="flex-grow" />
+                <Button onClick={handleStart} color="primary">
+                  Find path
+                </Button>
+              </div>
+            )}
+
+            {/* {state === "INIT" && (
               <>
-                {/* <div className="gap-3 hidden md:flex">
+                <div className="gap-3 hidden md:flex">
                   <select
                     aria-label="select pathfinding algorithm"
                     value={selectedAlgo}
@@ -289,7 +352,9 @@ const PathFinding: React.FC<PathFindingProps> = () => {
                       </div>
                     }
                   >
-                    <Button variant="outline">Grid Generation</Button>
+                    <Button variant="outline">
+                      Grid Generation
+                    </Button>
                   </Dialog>
                 </div>
                 <Dialog
@@ -349,14 +414,14 @@ const PathFinding: React.FC<PathFindingProps> = () => {
                     className="md:hidden"
                     variant="outline"
                   />
-                </Dialog> */}
+                </Dialog>
 
                 <div className="flex-grow" />
                 <Button onClick={handleStart} color="primary">
                   Find path
                 </Button>
               </>
-            )}
+            )} */}
             {state === "FINDING" && (
               <>
                 <p className="text-sm">{selectedAlgo}</p>

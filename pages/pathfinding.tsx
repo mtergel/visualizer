@@ -12,7 +12,7 @@ import Dialog, {
   DialogTitle,
 } from "components/Dialog/Dialog";
 import IconButton from "components/IconButton/IconButton";
-import { bfs, dfs } from "core/pathfinding";
+import { bfs, dfs, dijkstra } from "core/pathfinding";
 import memoize from "memoize-one";
 import React, { memo, useCallback, useState } from "react";
 import { areEqual, FixedSizeGrid as Grid } from "react-window";
@@ -24,6 +24,7 @@ interface PathFindingProps {}
 enum AlgoKey {
   "BFS" = "Bread First Search",
   "DFS" = "Depth First Search",
+  "DIJKSTRA" = "Dijkstra's pathfinder",
 }
 
 enum MazeKey {
@@ -169,12 +170,19 @@ const PathFinding: React.FC<PathFindingProps> = () => {
     switch (selectedAlgo) {
       case AlgoKey.BFS: {
         let path = await bfs(grid, visited, handleSetVisited);
+        console.log(path.size);
         setPath(path);
         break;
       }
       case AlgoKey.DFS: {
         // does not guarantee shortest
         let path = await dfs(grid, visited, handleSetVisited);
+        setPath(path);
+        break;
+      }
+      case AlgoKey.DIJKSTRA: {
+        let path = await dijkstra(grid, visited, handleSetVisited);
+        console.log(path.size);
         setPath(path);
         break;
       }
@@ -308,120 +316,6 @@ const PathFinding: React.FC<PathFindingProps> = () => {
                 </Button>
               </div>
             )}
-
-            {/* {state === "INIT" && (
-              <>
-                <div className="gap-3 hidden md:flex">
-                  <select
-                    aria-label="select pathfinding algorithm"
-                    value={selectedAlgo}
-                    disabled={state !== "INIT"}
-                    onChange={(e) =>
-                      setSelectedAlgo(e.currentTarget.value as AlgoKey)
-                    }
-                    className="bg-transparent border border-skin-base rounded-lg font-semibold focus:outline-none focus:border-transparent focus:ring focus:ring-indigo-500 dark:focus:ring-indigo-300"
-                  >
-                    {Object.entries(AlgoKey).map((pair) => (
-                      <option
-                        key={pair[0]}
-                        value={pair[1]}
-                        className="font-normal text-sm bg-skin-base text-skin-base"
-                      >
-                        {pair[1]}
-                      </option>
-                    ))}
-                  </select>
-
-                  <Dialog
-                    contentClassname="flex flex-col"
-                    content={
-                      <div className="h-full flex flex-col">
-                        <div className="pt-5 px-6 pb-4 flex-grow">
-                          <DialogTitle className="dialog-title">
-                            Grid Generation
-                          </DialogTitle>
-                          <div className="flex flex-col gap-2 my-3">
-                            <Button leftIcon={<GiMaze />} variant="outline">
-                              Maze
-                            </Button>
-                            <Button leftIcon={<GiBroom />} variant="outline">
-                              Clear walls
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    }
-                  >
-                    <Button variant="outline">
-                      Grid Generation
-                    </Button>
-                  </Dialog>
-                </div>
-                <Dialog
-                  contentClassname="flex flex-col"
-                  content={
-                    <div className="h-full flex flex-col">
-                      <div className="pt-5 px-6 pb-4 flex-grow">
-                        <DialogTitle className="dialog-title">
-                          Settings
-                        </DialogTitle>
-                        <DialogDescription className="dialog-description">
-                          Change pathfinding settings here.
-                        </DialogDescription>
-                        <div className="flex flex-col gap-2 my-3">
-                          <select
-                            aria-label="select pathfinding algorithm"
-                            value={selectedAlgo}
-                            onChange={(e) =>
-                              setSelectedAlgo(e.currentTarget.value as AlgoKey)
-                            }
-                            className="bg-transparent border border-skin-base rounded-lg font-semibold focus:outline-none focus:border-transparent focus:ring focus:ring-indigo-500 dark:focus:ring-indigo-300"
-                          >
-                            {Object.entries(AlgoKey).map((pair) => (
-                              <option
-                                key={pair[0]}
-                                value={pair[1]}
-                                className="font-normal text-sm bg-skin-base text-skin-base"
-                              >
-                                {pair[1]}
-                              </option>
-                            ))}
-                          </select>
-                          <Button leftIcon={<GiMaze />} variant="outline">
-                            Maze
-                          </Button>
-                          <Button leftIcon={<GiBroom />} variant="outline">
-                            Clear walls
-                          </Button>
-                          <DialogClose asChild>
-                            <Button
-                              onClick={handleStart}
-                              className="mt-4"
-                              color="primary"
-                            >
-                              Find path
-                            </Button>
-                          </DialogClose>
-                        </div>
-                      </div>
-                    </div>
-                  }
-                >
-                  <IconButton
-                    aria-label="settings"
-                    icon={<HiCog />}
-                    color="primary"
-                    className="md:hidden"
-                    variant="outline"
-                  />
-                </Dialog>
-
-                <div className="flex-grow" />
-                <Button onClick={handleStart} color="primary">
-                  Find path
-                </Button>
-              </>
-            )} */}
             {state === "FINDING" && (
               <>
                 <p className="text-sm">{selectedAlgo}</p>

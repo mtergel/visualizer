@@ -166,16 +166,20 @@ const PathFinding: React.FC<PathFindingProps> = () => {
 
   const handleStart = async () => {
     setState("FINDING");
-    let shortest = new Set<string>();
     switch (selectedAlgo) {
       case AlgoKey.BFS: {
-        shortest = await bfs(grid, visited, handleSetVisited);
+        let path = await bfs(grid, visited, handleSetVisited);
+        setPath(path);
+        break;
       }
       case AlgoKey.DFS: {
-        shortest = await dfs(grid, visited, handleSetVisited);
+        // does not guarantee shortest
+        let path = await dfs(grid, visited, handleSetVisited);
+        setPath(path);
+        break;
       }
     }
-    setPath(shortest);
+    // setPath(shortest);
     setState("FINISHED");
   };
 
@@ -244,7 +248,7 @@ const PathFinding: React.FC<PathFindingProps> = () => {
 
             {state === "INIT" && (
               <>
-                <div className="gap-3 hidden md:flex">
+                {/* <div className="gap-3 hidden md:flex">
                   <select
                     aria-label="select pathfinding algorithm"
                     value={selectedAlgo}
@@ -345,7 +349,7 @@ const PathFinding: React.FC<PathFindingProps> = () => {
                     className="md:hidden"
                     variant="outline"
                   />
-                </Dialog>
+                </Dialog> */}
 
                 <div className="flex-grow" />
                 <Button onClick={handleStart} color="primary">

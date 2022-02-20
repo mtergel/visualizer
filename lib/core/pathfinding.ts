@@ -98,8 +98,11 @@ export const bfs = async (
   _visited[start.y][start.x] = true;
 
   while (q.length > 0) {
-    let p = q[0];
-    q.shift();
+    let p = q.shift() as BFSCell;
+
+    if (arrayEquals([p.y, p.x], _end)) {
+      break;
+    }
 
     // check 4 directions
     for (let i = 0; i < 4; i++) {
@@ -114,16 +117,17 @@ export const bfs = async (
         !_visited[ny][nx] &&
         (grid[ny][nx] === NodeType.Normal || grid[ny][nx] === NodeType.End)
       ) {
+        // Mark as visited
+        handleSetVisited(ny, nx, true);
+        _visited[ny][nx] = true;
+
         // set its parent
         newGrid[ny][nx] = {
           ...newGrid[ny][nx],
           parent: p,
         };
-        q.push(newGrid[ny][nx]);
 
-        // Mark as visited
-        handleSetVisited(ny, nx, true);
-        _visited[ny][nx] = true;
+        q.push(newGrid[ny][nx]);
 
         // Destination is reached.
         if (arrayEquals([ny, nx], _end)) {

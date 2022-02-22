@@ -13,8 +13,9 @@ import Dialog, {
 } from "components/Dialog/Dialog";
 import IconButton from "components/IconButton/IconButton";
 import astar from "core/astar";
+import { bfs, dijkstra } from "core/pathfinding";
 import memoize from "memoize-one";
-import React, { memo, useCallback, useState } from "react";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import { areEqual, FixedSizeGrid as Grid } from "react-window";
 import { NodeType } from "types";
 import { useImmer } from "use-immer";
@@ -171,27 +172,22 @@ const PathFinding: React.FC<PathFindingProps> = () => {
     switch (selectedAlgo) {
       case AlgoKey.ASTAR: {
         let path = await astar(grid, visited, handleSetVisited);
+        console.log(path.size);
         setPath(path);
         break;
       }
-      // case AlgoKey.BFS: {
-      //   let path = await bfs(grid, visited, handleSetVisited);
-      //   console.log(path.size);
-      //   setPath(path);
-      //   break;
-      // }
-      // case AlgoKey.DFS: {
-      //   // does not guarantee shortest
-      //   let path = await dfs(grid, visited, handleSetVisited);
-      //   setPath(path);
-      //   break;
-      // }
-      // case AlgoKey.DIJKSTRA: {
-      //   let path = await dijkstra(grid, visited, handleSetVisited);
-      //   console.log(path.size);
-      //   setPath(path);
-      //   break;
-      // }
+      case AlgoKey.BFS: {
+        let path = await bfs(grid, visited, handleSetVisited);
+        console.log(path.size);
+        setPath(path);
+        break;
+      }
+      case AlgoKey.DIJKSTRA: {
+        let path = await dijkstra(grid, visited, handleSetVisited);
+        console.log(path.size);
+        setPath(path);
+        break;
+      }
     }
     setState("FINISHED");
   };

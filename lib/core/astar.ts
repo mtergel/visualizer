@@ -1,4 +1,5 @@
 import { NodeType } from "types";
+import { timeout } from "utils/timingUtils";
 
 type Cell = {
   gridX: number;
@@ -106,7 +107,7 @@ const astar = async (
   };
 
   newGrid[startingCoords.y][startingCoords.x].gCost = 0;
-  newGrid[startingCoords.y][startingCoords.x].hCost = Infinity; // shoudnt this be iNF
+  newGrid[startingCoords.y][startingCoords.x].hCost = Infinity;
 
   openSet.push(newGrid[startingCoords.y][startingCoords.x]);
 
@@ -157,6 +158,7 @@ const astar = async (
         }
       }
     });
+    await timeout(20);
   }
 
   return path;

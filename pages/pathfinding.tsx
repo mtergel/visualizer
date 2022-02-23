@@ -195,11 +195,28 @@ const PathFinding: React.FC<PathFindingProps> = () => {
     setState("FINISHED");
   };
 
-  const handleReset = () => {
+  const handleAgain = () => {
     setPath(new Set());
     setVisited(initialVisited);
     setState("INIT");
   };
+
+  const handleClearWalls = useCallback(
+    () => {
+      setGrid((draft) => {
+        // draft[row][col] = value;
+        for (let i = 0; i < draft.length; i++) {
+          for (let j = 0; j < draft[0].length; j++) {
+            if (draft[i][j] === NodeType.Wall) {
+              draft[i][j] = NodeType.Normal;
+            }
+          }
+        }
+      });
+    },
+    // eslint-disable-next-line
+    []
+  );
 
   return (
     <div className="flex flex-col h-full">
@@ -290,8 +307,12 @@ const PathFinding: React.FC<PathFindingProps> = () => {
                           <Button leftIcon={<GiMaze />} variant="outline">
                             Maze
                           </Button>
-                          <Button leftIcon={<GiBroom />} variant="outline">
-                            Clear walls
+                          <Button
+                            onClick={handleClearWalls}
+                            leftIcon={<GiBroom />}
+                            variant="outline"
+                          >
+                            Clear Walls
                           </Button>
                           <DialogClose asChild>
                             <Button
@@ -330,7 +351,7 @@ const PathFinding: React.FC<PathFindingProps> = () => {
               <>
                 <p className="text-sm">{selectedAlgo}</p>
                 <div className="flex-grow" />
-                <Button color="primary" onClick={handleReset}>
+                <Button color="primary" onClick={handleAgain}>
                   New
                 </Button>
               </>

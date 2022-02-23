@@ -1,5 +1,6 @@
 import { NodeType } from "types";
 import { timeout } from "utils/timingUtils";
+import Heap from "./heap";
 
 type Cell = {
   gridX: number;
@@ -51,12 +52,7 @@ const generateGrid = (grid: NodeType[][]) => {
   };
 };
 
-const stringToCoords = (input: string) => {
-  let coords = input.split("-");
-
-  return { y: parseInt(coords[0]), x: parseInt(coords[1]) };
-};
-
+const stringify = (cell: Cell) => `${cell.gridX}-${cell.gridY}`;
 const getNeighbours = (grid: Cell[][], node: Cell) => {
   let neighbours: Cell[] = [];
 
@@ -93,8 +89,15 @@ const astar = async (
   }
 
   // string list
-  let openSet: Cell[] = [];
-  let _visited = visited.map((arr) => arr.slice());
+
+  const openFrontier = new Heap<Cell>(
+    (a, b) => a.gCost + a.hCost < b.gCost + b.hCost
+  );
+
+  const closedSet: { [key: string]: true } = {};
+
+  //stores the contents of the frontier to allow for fast retrieval of f-score
+  const openSet: { [key: string]: number | undefined } = {};
 
   // as y-x
   let path = new Set<string>();
@@ -109,53 +112,40 @@ const astar = async (
   newGrid[startingCoords.y][startingCoords.x].gCost = 0;
   newGrid[startingCoords.y][startingCoords.x].hCost = Infinity;
 
-  openSet.push(newGrid[startingCoords.y][startingCoords.x]);
+  openFrontier.push(newGrid[startingCoords.y][startingCoords.x]);
+  openSet[stringify(newGrid[startingCoords.y][startingCoords.x])] = 0;
 
-  while (openSet.length > 0) {
-    let node = openSet[0];
-    for (let i = 1; i < openSet.length; i++) {
-      let fCost = node.gCost + node.hCost;
-      let comp = openSet[i].gCost + openSet[i].hCost;
-      if (comp <= fCost && openSet[i].hCost < node.hCost) {
-        node = openSet[i];
-      }
+  while (!openFrontier.isEmpty()) {
+    const curr = openFrontier.pop();
+    const currKey = stringify(curr);
+    openSet[currKey] = undefined;
+    if (closedSet[currKey]) {
+      continue;
     }
-    let removeLowest = openSet.findIndex(
-      (i) => i.gridX === node.gridX && i.gridY === node.gridY
-    );
-    openSet.splice(removeLowest, 1);
-
-    handleSetVisited(node.gridY, node.gridX, true);
-    _visited[node.gridY][node.gridX] = true;
-
-    if (node.gridX === endCoords.x && node.gridY === endCoords.y) {
+    closedSet[currKey] = true;
+    handleSetVisited(curr.gridY, curr.gridX, true);
+    if (curr.gridX === endCoords.x && curr.gridY === endCoords.y) {
       path.add(`${startingCoords.y}-${startingCoords.x}`);
-      findPath(newGrid[node.gridY][node.gridX]);
+      findPath(curr);
       return path;
     }
-
-    let neighbours = getNeighbours(newGrid, node);
-    neighbours.forEach((neighbour) => {
-      if (!neighbour.isWalkable || _visited[neighbour.gridY][neighbour.gridX]) {
+    let neighbors = getNeighbours(newGrid, curr);
+    neighbors.forEach((neighbor) => {
+      const neighborKey = stringify(neighbor);
+      if (!neighbor.isWalkable || closedSet[neighborKey]) {
         return;
       }
 
-      let newCost = node.gCost + getDistance(node, neighbour);
-      const containsNeighbour = openSet.findIndex(
-        (i) => neighbour.gridX === i.gridX && neighbour.gridY === i.gridY
-      );
-
-      if (newCost < neighbour.gCost || containsNeighbour !== -1) {
-        neighbour.gCost = newCost;
-        neighbour.hCost = getDistance(
-          neighbour,
+      const newCost = curr.gCost + getDistance(curr, neighbor);
+      if (!openSet[neighborKey] || newCost < openSet[neighborKey]!) {
+        neighbor.parent = curr;
+        neighbor.gCost = newCost;
+        neighbor.hCost = getDistance(
+          neighbor,
           newGrid[endCoords.y][endCoords.x]
         );
-        neighbour.parent = node;
-
-        if (containsNeighbour === -1) {
-          openSet.push(neighbour);
-        }
+        openFrontier.push(neighbor);
+        openSet[neighborKey] = newCost;
       }
     });
     await timeout(20);

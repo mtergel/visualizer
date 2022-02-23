@@ -14,7 +14,7 @@ import Dialog, {
 import IconButton from "components/IconButton/IconButton";
 import astar from "core/astar";
 import dijkstra from "core/dijkstra";
-import { bfs } from "core/pathfinding";
+import { bfs, dfs } from "core/pathfinding";
 import memoize from "memoize-one";
 import React, { memo, useCallback, useState } from "react";
 import { areEqual, FixedSizeGrid as Grid } from "react-window";
@@ -24,10 +24,10 @@ import { useImmer } from "use-immer";
 interface PathFindingProps {}
 
 enum AlgoKey {
+  "ASTAR" = "A*",
+  "DIJKSTRA" = "Dijkstra's pathfinder",
   "BFS" = "Bread First Search",
   "DFS" = "Depth First Search",
-  "DIJKSTRA" = "Dijkstra's pathfinder",
-  "ASTAR" = "A*",
 }
 
 enum MazeKey {
@@ -128,7 +128,7 @@ const PathFinding: React.FC<PathFindingProps> = () => {
   const [grid, setGrid] = useImmer(initialGrid);
   const [isMouseDown, setIsMouseDown] = useState(false);
   const [dragNode, setDragNode] = useState<DragNode | null>(null);
-  const [selectedAlgo, setSelectedAlgo] = useState<AlgoKey>(AlgoKey.BFS);
+  const [selectedAlgo, setSelectedAlgo] = useState<AlgoKey>(AlgoKey.ASTAR);
   const [visited, setVisited] = useImmer(initialVisited);
   const [path, setPath] = useState<Set<string>>(new Set());
   const [state, setState] = useState<StateType>("INIT");
@@ -172,20 +172,22 @@ const PathFinding: React.FC<PathFindingProps> = () => {
     setState("FINDING");
     switch (selectedAlgo) {
       case AlgoKey.ASTAR: {
-        let path = await astar(grid, visited, handleSetVisited);
-        console.log(path.size);
+        let path = await astar(grid, handleSetVisited);
         setPath(path);
         break;
       }
       case AlgoKey.BFS: {
         let path = await bfs(grid, visited, handleSetVisited);
-        console.log(path.size);
+        setPath(path);
+        break;
+      }
+      case AlgoKey.DFS: {
+        let path = await dfs(grid, visited, handleSetVisited);
         setPath(path);
         break;
       }
       case AlgoKey.DIJKSTRA: {
-        let path = await dijkstra(grid, visited, handleSetVisited);
-        console.log(path.size);
+        let path = await dijkstra(grid, handleSetVisited);
         setPath(path);
         break;
       }
@@ -210,21 +212,20 @@ const PathFinding: React.FC<PathFindingProps> = () => {
                 <div className="h-full flex flex-col">
                   <div className="pt-5 px-6 pb-4 flex-grow">
                     <DialogTitle className="dialog-title">Tutorial</DialogTitle>
-                    <DialogDescription className="dialog-description">
-                      <ul>
-                        <li>
-                          You can drag start and end nodes to move them around
-                        </li>
-                        <li>
-                          You can draw walls using your mouse/touch or generate
-                          a maze
-                        </li>
-                        <li>You can select a pathfinding algorithm</li>
-                        <li className="mt-2">
-                          When you are ready click find path!
-                        </li>
-                      </ul>
-                    </DialogDescription>
+                    <ul className="dialog-description">
+                      <li>
+                        You can drag start and end nodes to move them around
+                      </li>
+                      <li>
+                        You can draw walls using your mouse/touch or generate a
+                        maze
+                      </li>
+                      <li>You can select a pathfinding algorithm</li>
+                      <li className="mt-2">
+                        When you are ready click find path!
+                      </li>
+                    </ul>
+
                     <div className="flex flex-col gap-6 my-3">
                       <div>
                         <p className="text-sm mb-2 font-semibold">

@@ -73,7 +73,6 @@ const getNeighbours = (grid: Cell[][], node: Cell) => {
 
 const dijkstra = async (
   grid: NodeType[][],
-  visited: Boolean[][],
   handleSetVisited: (row: number, col: number, val: boolean) => void
 ) => {
   const { newGrid, startingCoords, endCoords } = generateGrid(grid);

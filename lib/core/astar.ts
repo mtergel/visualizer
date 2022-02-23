@@ -79,7 +79,6 @@ const getNeighbours = (grid: Cell[][], node: Cell) => {
 
 const astar = async (
   grid: NodeType[][],
-  visited: Boolean[][],
   handleSetVisited: (row: number, col: number, val: boolean) => void
 ) => {
   const { startingCoords, endCoords, newGrid } = generateGrid(grid);

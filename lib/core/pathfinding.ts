@@ -13,7 +13,6 @@ type Cell = {
   y: number;
   val: NodeType;
   parent: Cell | null;
-  distance: number; // distance from a node to the root
 };
 
 const findSE = (grid: NodeType[][]) => {
@@ -32,7 +31,6 @@ const findSE = (grid: NodeType[][]) => {
           x: j,
           val: grid[i][j],
           parent: null,
-          distance: 0,
         };
       }
 
@@ -42,7 +40,6 @@ const findSE = (grid: NodeType[][]) => {
           x: j,
           val: grid[i][j],
           parent: null,
-          distance: Infinity,
         };
       }
 
@@ -51,7 +48,6 @@ const findSE = (grid: NodeType[][]) => {
         y: i,
         val: grid[i][j],
         parent: null,
-        distance: grid[i][j] === NodeType.Start ? 0 : Infinity,
       };
     }
   }
@@ -198,116 +194,6 @@ export const dfs = async (
           findPath(newGrid[ny][nx]);
           return path;
         }
-      }
-    }
-    await timeout(10);
-  }
-
-  return path;
-};
-
-type PriortyQueItem = {
-  element: Cell;
-  priorty: number;
-};
-export const dijkstra = async (
-  grid: NodeType[][],
-  visited: Boolean[][],
-  handleSetVisited: (row: number, col: number, val: boolean) => void
-) => {
-  let q = [] as PriortyQueItem[]; // Queue
-
-  let _visited = visited.map((arr) => arr.slice());
-  let [start, end, newGrid] = findSE(grid);
-  const _end = [end.y, end.x];
-
-  // as y-x
-  let path = new Set<string>();
-
-  const findPath = (node: Cell) => {
-    if (node.parent) {
-      findPath(node.parent);
-      console.log(node.distance);
-      path.add(`${node.y}-${node.x}`);
-    }
-  };
-
-  // add starting node to queue
-  q.push({
-    element: start,
-    priorty: 0,
-  });
-
-  while (q.length > 0) {
-    const current = q.shift() as PriortyQueItem;
-
-    // Mark as visited
-    handleSetVisited(current.element.y, current.element.x, true);
-    _visited[current.element.y][current.element.x] = true;
-
-    if (arrayEquals([current.element.y, current.element.x], _end)) {
-      path.add(`${start.y}-${start.x}`);
-      findPath(newGrid[current.element.y][current.element.x]);
-      break;
-    }
-
-    // check 4 directions
-    for (let i = 0; i < 4; i++) {
-      let ny = current.element.y + directions[i][0];
-      let nx = current.element.x + directions[i][1];
-
-      if (
-        ny >= 0 &&
-        nx >= 0 &&
-        ny < grid.length &&
-        nx < grid[0].length &&
-        !_visited[ny][nx] &&
-        (grid[ny][nx] === NodeType.Normal || grid[ny][nx] === NodeType.End)
-      ) {
-        const minDistance = Math.min(
-          newGrid[ny][nx].distance,
-          current.element.distance + 1
-        );
-
-        if (minDistance !== newGrid[ny][nx].distance) {
-          // update
-          newGrid[ny][nx] = {
-            ...newGrid[ny][nx],
-            distance: minDistance,
-            parent: current.element,
-          };
-
-          const findInQue = q.findIndex(
-            (i) =>
-              i.element.x === newGrid[ny][nx].x &&
-              i.element.y === newGrid[ny][nx].y
-          );
-          if (findInQue >= 0) {
-            q[findInQue].priorty = minDistance;
-          }
-        }
-
-        // check if newGrid[ny][nx] is in q
-        const findNeighor = q.findIndex(
-          (i) =>
-            i.element.x === newGrid[ny][nx].x &&
-            i.element.y === newGrid[ny][nx].y
-        );
-        if (findNeighor === -1) {
-          // set parent
-          newGrid[ny][nx] = {
-            ...newGrid[ny][nx],
-            parent: current.element,
-          };
-
-          q.push({
-            element: newGrid[ny][nx],
-            priorty: newGrid[ny][nx].distance,
-          });
-        }
-
-        // change this later
-        q.sort((a, b) => a.priorty - b.priorty);
       }
     }
     await timeout(10);

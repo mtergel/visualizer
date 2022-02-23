@@ -13,9 +13,10 @@ import Dialog, {
 } from "components/Dialog/Dialog";
 import IconButton from "components/IconButton/IconButton";
 import astar from "core/astar";
-import { bfs, dijkstra } from "core/pathfinding";
+import dijkstra from "core/dijkstra";
+import { bfs } from "core/pathfinding";
 import memoize from "memoize-one";
-import React, { memo, useCallback, useEffect, useState } from "react";
+import React, { memo, useCallback, useState } from "react";
 import { areEqual, FixedSizeGrid as Grid } from "react-window";
 import { NodeType } from "types";
 import { useImmer } from "use-immer";

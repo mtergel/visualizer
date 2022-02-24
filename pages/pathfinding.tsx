@@ -11,9 +11,16 @@ import Dialog, {
   DialogDescription,
   DialogTitle,
 } from "components/Dialog/Dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "components/Dropdown/Dropdown";
 import IconButton from "components/IconButton/IconButton";
 import astar from "core/astar";
 import dijkstra from "core/dijkstra";
+import { recursiveDivision } from "core/maze";
 import { bfs, dfs } from "core/pathfinding";
 import memoize from "memoize-one";
 import React, { memo, useCallback, useState } from "react";
@@ -304,9 +311,58 @@ const PathFinding: React.FC<PathFindingProps> = () => {
                               </option>
                             ))}
                           </select>
-                          <Button leftIcon={<GiMaze />} variant="outline">
-                            Maze
-                          </Button>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button leftIcon={<GiMaze />} variant="outline">
+                                Maze
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent sideOffset={4}>
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  handleClearWalls();
+                                  setPath(new Set());
+                                  setVisited(initialVisited);
+                                  setState("INIT");
+
+                                  recursiveDivision(
+                                    grid,
+                                    2,
+                                    grid.length - 3,
+                                    2,
+                                    grid[0].length - 3,
+                                    "horizontal",
+                                    false,
+                                    handleSetNode
+                                  );
+                                }}
+                              >
+                                Recursive division (horizontal)
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  handleClearWalls();
+                                  setPath(new Set());
+                                  setVisited(initialVisited);
+                                  setState("INIT");
+
+                                  recursiveDivision(
+                                    grid,
+                                    2,
+                                    grid.length - 3,
+                                    2,
+                                    grid[0].length - 3,
+                                    "vertical",
+                                    false,
+                                    handleSetNode
+                                  );
+                                }}
+                              >
+                                Recursive division (vertical)
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+
                           <Button
                             onClick={handleClearWalls}
                             leftIcon={<GiBroom />}

@@ -155,8 +155,7 @@ const astar = async (
 
 const getDistance = (nodeA: Cell, nodeB: Cell) => {
   return (
-    2 *
-    (Math.abs(nodeB.gridX - nodeA.gridX) + Math.abs(nodeB.gridY - nodeA.gridY))
+    Math.abs(nodeB.gridX - nodeA.gridX) + Math.abs(nodeB.gridY - nodeA.gridY)
   );
 };
 export default astar;

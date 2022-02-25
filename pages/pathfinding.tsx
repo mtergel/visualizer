@@ -1,16 +1,11 @@
 import { AiFillCar } from "@react-icons/all-files/ai/AiFillCar";
 import { FaFlagCheckered } from "@react-icons/all-files/fa/FaFlagCheckered";
-import { GiBroom } from "@react-icons/all-files/gi/GiBroom";
 import { GiMaze } from "@react-icons/all-files/gi/GiMaze";
 import { HiCog } from "@react-icons/all-files/hi/HiCog";
 import { HiOutlineInformationCircle } from "@react-icons/all-files/hi/HiOutlineInformationCircle";
 import clsx from "clsx";
 import Button from "components/Button/Button";
-import Dialog, {
-  DialogClose,
-  DialogDescription,
-  DialogTitle,
-} from "components/Dialog/Dialog";
+import Dialog, { DialogClose, DialogTitle } from "components/Dialog/Dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,7 +33,7 @@ enum AlgoKey {
 }
 
 enum MazeKey {
-  "Prim" = "Prim's algorithm",
+  "RECURSIVE" = "Recursive Division",
 }
 
 type StateType = "INIT" | "FINDING" | "FINISHED";
@@ -64,7 +59,7 @@ let initialVisited = Array.from({ length: ROWS }, () =>
 );
 
 initialGrid[2][4] = NodeType.Start;
-initialGrid[4][12] = NodeType.End;
+initialGrid[6][18] = NodeType.End;
 
 const wallColor = "bg-slate-600 dark:bg-gray-600";
 const pathColor = "bg-indigo-300 dark:bg-indigo-400";
@@ -139,6 +134,7 @@ const PathFinding: React.FC<PathFindingProps> = () => {
   const [visited, setVisited] = useImmer(initialVisited);
   const [path, setPath] = useState<Set<string>>(new Set());
   const [state, setState] = useState<StateType>("INIT");
+  const [loading, setLoading] = useState(false);
 
   const handleSetDragNode = useCallback((node: DragNode | null) => {
     setDragNode(node);
@@ -219,16 +215,41 @@ const PathFinding: React.FC<PathFindingProps> = () => {
             }
           }
         }
+        return draft;
       });
     },
     // eslint-disable-next-line
     []
   );
 
+  const handleGenerateMaze = async (input: MazeKey) => {
+    setLoading(true);
+    handleClearWalls();
+    setVisited(initialVisited);
+    setState("INIT");
+
+    switch (input) {
+      case MazeKey.RECURSIVE: {
+        await recursiveDivision(
+          grid,
+          2,
+          grid.length - 3,
+          2,
+          grid[0].length - 3,
+          "horizontal",
+          false,
+          handleSetNode
+        );
+        break;
+      }
+    }
+    setLoading(false);
+  };
+
   return (
     <div className="flex flex-col h-full">
       <div className="h-[4.5rem] bg-skin-secondary border-b">
-        <div className="max-w-screen-2xl mx-auto flex items-center h-full px-4 md:px-[60px]">
+        <div className="max-w-screen-2xl mx-auto flex items-center h-full px-4 lg:px-[60px]">
           <div className="flex items-center flex-grow gap-3">
             <Dialog
               contentClassname="flex flex-col"
@@ -281,105 +302,134 @@ const PathFinding: React.FC<PathFindingProps> = () => {
             </Dialog>
             {state === "INIT" && (
               <div className="flex flex-grow gap-3">
+                <div className="gap-2 items-center hidden md:flex">
+                  <select
+                    aria-label="select pathfinding algorithm"
+                    value={selectedAlgo}
+                    onChange={(e) =>
+                      setSelectedAlgo(e.currentTarget.value as AlgoKey)
+                    }
+                    className="bg-transparent border border-skin-base rounded-lg font-semibold focus:outline-none focus:border-transparent focus:ring focus:ring-indigo-500 dark:focus:ring-indigo-300"
+                  >
+                    {Object.entries(AlgoKey).map((pair) => (
+                      <option
+                        key={pair[0]}
+                        value={pair[1]}
+                        className="font-normal text-sm bg-skin-base text-skin-base"
+                      >
+                        {pair[1]}
+                      </option>
+                    ))}
+                  </select>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        disabled={loading}
+                        leftIcon={<GiMaze />}
+                        variant="outline"
+                      >
+                        Maze
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent sideOffset={4}>
+                      <DropdownMenuItem
+                        onClick={() => handleGenerateMaze(MazeKey.RECURSIVE)}
+                        disabled={loading}
+                      >
+                        Recursive division
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  <Button
+                    disabled={loading}
+                    variant="outline"
+                    onClick={handleClearWalls}
+                  >
+                    Clear walls
+                  </Button>
+                </div>
                 <Dialog
                   contentClassname="flex flex-col"
                   content={
                     <div className="h-full flex flex-col">
                       <div className="pt-5 px-6 pb-4 flex-grow">
                         <DialogTitle className="dialog-title">
-                          Settings
+                          Options
                         </DialogTitle>
-                        <DialogDescription className="dialog-description">
-                          Change pathfinding settings here.
-                        </DialogDescription>
-                        <div className="flex flex-col gap-2 my-3">
-                          <select
-                            aria-label="select pathfinding algorithm"
-                            value={selectedAlgo}
-                            onChange={(e) =>
-                              setSelectedAlgo(e.currentTarget.value as AlgoKey)
-                            }
-                            className="bg-transparent border border-skin-base rounded-lg font-semibold focus:outline-none focus:border-transparent focus:ring focus:ring-indigo-500 dark:focus:ring-indigo-300"
-                          >
-                            {Object.entries(AlgoKey).map((pair) => (
-                              <option
-                                key={pair[0]}
-                                value={pair[1]}
-                                className="font-normal text-sm bg-skin-base text-skin-base"
-                              >
-                                {pair[1]}
-                              </option>
-                            ))}
-                          </select>
+                        <div className="flex flex-col gap-3 my-3">
+                          <div className="flex flex-col w-full">
+                            <label
+                              htmlFor="pathalgo"
+                              className="text-sm text-skin-muted mb-1"
+                            >
+                              Pathfinding algorithm:
+                            </label>
+                            <select
+                              id="pathalgo"
+                              aria-label="select pathfinding algorithm"
+                              value={selectedAlgo}
+                              onChange={(e) =>
+                                setSelectedAlgo(
+                                  e.currentTarget.value as AlgoKey
+                                )
+                              }
+                              className="bg-transparent border border-skin-base rounded-lg font-semibold focus:outline-none focus:border-transparent focus:ring focus:ring-indigo-500 dark:focus:ring-indigo-300"
+                            >
+                              {Object.entries(AlgoKey).map((pair) => (
+                                <option
+                                  key={pair[0]}
+                                  value={pair[1]}
+                                  className="font-normal text-sm bg-skin-base text-skin-base"
+                                >
+                                  {pair[1]}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button leftIcon={<GiMaze />} variant="outline">
+                              <Button
+                                disabled={loading}
+                                leftIcon={<GiMaze />}
+                                variant="outline"
+                              >
                                 Maze
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent sideOffset={4}>
-                              <DropdownMenuItem
-                                onClick={() => {
-                                  handleClearWalls();
-                                  setPath(new Set());
-                                  setVisited(initialVisited);
-                                  setState("INIT");
-
-                                  recursiveDivision(
-                                    grid,
-                                    2,
-                                    grid.length - 3,
-                                    2,
-                                    grid[0].length - 3,
-                                    "horizontal",
-                                    false,
-                                    handleSetNode
-                                  );
-                                }}
-                              >
-                                Recursive division (horizontal)
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={() => {
-                                  handleClearWalls();
-                                  setPath(new Set());
-                                  setVisited(initialVisited);
-                                  setState("INIT");
-
-                                  recursiveDivision(
-                                    grid,
-                                    2,
-                                    grid.length - 3,
-                                    2,
-                                    grid[0].length - 3,
-                                    "vertical",
-                                    false,
-                                    handleSetNode
-                                  );
-                                }}
-                              >
-                                Recursive division (vertical)
-                              </DropdownMenuItem>
+                              <DialogClose asChild>
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    handleGenerateMaze(MazeKey.RECURSIVE)
+                                  }
+                                  disabled={loading}
+                                >
+                                  Recursive division
+                                </DropdownMenuItem>
+                              </DialogClose>
                             </DropdownMenuContent>
                           </DropdownMenu>
-
                           <Button
-                            onClick={handleClearWalls}
-                            leftIcon={<GiBroom />}
+                            isDisabled={loading}
                             variant="outline"
+                            onClick={handleClearWalls}
                           >
-                            Clear Walls
+                            Clear walls
                           </Button>
-                          <DialogClose asChild>
-                            <Button
-                              onClick={handleStart}
-                              className="mt-4"
-                              color="primary"
-                            >
-                              Find path
-                            </Button>
-                          </DialogClose>
                         </div>
+                      </div>
+                      <div className="bg-skin-offset px-6 pb-4 w-full">
+                        <DialogClose asChild>
+                          <Button
+                            onClick={handleStart}
+                            isFullWidth
+                            color="primary"
+                            className="px-8"
+                            isDisabled={loading}
+                          >
+                            Search
+                          </Button>
+                        </DialogClose>
                       </div>
                     </div>
                   }
@@ -388,11 +438,16 @@ const PathFinding: React.FC<PathFindingProps> = () => {
                     aria-label="settings"
                     icon={<HiCog />}
                     color="primary"
+                    className="md:hidden"
                   />
                 </Dialog>
                 <div className="flex-grow" />
-                <Button onClick={handleStart} color="primary">
-                  Find path
+                <Button
+                  isDisabled={loading}
+                  onClick={handleStart}
+                  color="primary"
+                >
+                  Search
                 </Button>
               </div>
             )}

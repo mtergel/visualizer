@@ -216,7 +216,7 @@ export const recursiveDivision = async (
           if (_grid[i][j] === NodeType.Normal) {
             handleSetNode(i, j, NodeType.Wall);
             _grid[i][j] === NodeType.Wall;
-            await timeout(5);
+            await timeout(2);
           }
         }
       }

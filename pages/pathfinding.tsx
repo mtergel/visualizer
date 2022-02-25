@@ -59,7 +59,7 @@ let initialVisited = Array.from({ length: ROWS }, () =>
 );
 
 initialGrid[2][4] = NodeType.Start;
-initialGrid[6][18] = NodeType.End;
+initialGrid[12][18] = NodeType.End;
 
 const wallColor = "bg-slate-600 dark:bg-gray-600";
 const pathColor = "bg-indigo-300 dark:bg-indigo-400";

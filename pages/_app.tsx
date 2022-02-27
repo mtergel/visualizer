@@ -8,7 +8,24 @@ import Layout from "components/Layout/Layout";
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
-      <DefaultSeo title="Visualizer" />
+      <DefaultSeo
+        title="Visualizer"
+        description="Sorting, pathfinding algorithm visualizer."
+        openGraph={{
+          type: "website",
+          url: "https://visualizer-iota.vercel.app/",
+          title: "Visualizer",
+          description: "Sorting, pathfinding algorithm visualizer.",
+          images: [
+            {
+              url: "https://res.cloudinary.com/flare-community/image/upload/v1645961912/static/visualizer_bhwskm.png",
+              width: 632,
+              height: 632,
+              alt: "visualizer logo",
+            },
+          ],
+        }}
+      />
       <ThemeProvider
         attribute="class"
         defaultTheme="system"

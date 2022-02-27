@@ -5,8 +5,8 @@ Welcome to Visualizer! I built this web application because I was learning about
 You can access it here:
 [https://visualizer-iota.vercel.app](https://visualizer-iota.vercel.app)
 
-![pathfinding example](https://github.com/mtergel/visualizer/blob/main/maze.gif, "Pathfinder")
-![sorting example](https://github.com/mtergel/visualizer/blob/main/sorting.gif, "Sorter")
+![pathfinding example](https://github.com/mtergel/visualizer/blob/main/maze.gif)
+![sorting example](https://github.com/mtergel/visualizer/blob/main/sorting.gif)
 
 
 ## Algorithms

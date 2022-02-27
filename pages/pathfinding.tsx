@@ -34,7 +34,7 @@ enum AlgoKey {
 
 enum MazeKey {
   "RECURSIVE" = "Recursive Division",
-  "PRIM" = "Prim's",
+  "PRIM" = "Randomized Prims",
 }
 
 type StateType = "INIT" | "FINDING" | "FINISHED";
@@ -256,55 +256,7 @@ const PathFinding: React.FC<PathFindingProps> = () => {
       <div className="h-[4.5rem] bg-skin-secondary border-b">
         <div className="max-w-screen-2xl mx-auto flex items-center h-full px-4 lg:px-[60px]">
           <div className="flex items-center flex-grow gap-3">
-            <Dialog
-              contentClassname="flex flex-col"
-              content={
-                <div className="h-full flex flex-col">
-                  <div className="pt-5 px-6 pb-4 flex-grow">
-                    <DialogTitle className="dialog-title">Tutorial</DialogTitle>
-                    <ul className="dialog-description">
-                      <li>
-                        You can drag start and end nodes to move them around
-                      </li>
-                      <li>
-                        You can draw walls using your mouse/touch or generate a
-                        maze
-                      </li>
-                      <li>You can select a pathfinding algorithm</li>
-                      <li className="mt-2">
-                        When you are ready click find path!
-                      </li>
-                    </ul>
-
-                    <div className="flex flex-col gap-6 my-3">
-                      <div>
-                        <p className="text-sm mb-2 font-semibold">
-                          Cell legend
-                        </p>
-                        <div className="grid grid-cols-2 gap-2">
-                          {legendData.map((i) => (
-                            <div
-                              className="flex items-center gap-2"
-                              key={i.name}
-                            >
-                              {i.render}
-                              <p className="text-sm text-skin-muted">
-                                {i.name}
-                              </p>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              }
-            >
-              <IconButton
-                aria-label="info"
-                icon={<HiOutlineInformationCircle />}
-              />
-            </Dialog>
+            <TutorialInfo />
             {state === "INIT" && (
               <div className="flex flex-grow gap-3">
                 <div className="gap-2 items-center hidden md:flex">
@@ -341,13 +293,13 @@ const PathFinding: React.FC<PathFindingProps> = () => {
                         onClick={() => handleGenerateMaze(MazeKey.RECURSIVE)}
                         disabled={loading}
                       >
-                        Recursive division
+                        {MazeKey.RECURSIVE}
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() => handleGenerateMaze(MazeKey.PRIM)}
                         disabled={loading}
                       >
-                        Prim&apos;s
+                        {MazeKey.PRIM}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -415,15 +367,17 @@ const PathFinding: React.FC<PathFindingProps> = () => {
                                   }
                                   disabled={loading}
                                 >
-                                  Recursive division
+                                  {MazeKey.RECURSIVE}
                                 </DropdownMenuItem>
+                              </DialogClose>
+                              <DialogClose asChild>
                                 <DropdownMenuItem
                                   onClick={() =>
                                     handleGenerateMaze(MazeKey.PRIM)
                                   }
                                   disabled={loading}
                                 >
-                                  Prim&apos;s
+                                  {MazeKey.PRIM}
                                 </DropdownMenuItem>
                               </DialogClose>
                             </DropdownMenuContent>
@@ -625,4 +579,44 @@ const Cell = memo((props: any) => {
 }, areEqual);
 
 Cell.displayName = "GridCell";
+
+const TutorialInfo: React.FC<{}> = () => {
+  return (
+    <Dialog
+      contentClassname="flex flex-col"
+      content={
+        <div className="h-full flex flex-col">
+          <div className="pt-5 px-6 pb-4 flex-grow">
+            <DialogTitle className="dialog-title">Tutorial</DialogTitle>
+            <ul className="dialog-description">
+              <li>You can drag start and end nodes to move them around</li>
+              <li>
+                You can draw walls using your mouse/touch or generate a maze
+              </li>
+              <li>You can select a pathfinding algorithm</li>
+              <li className="mt-2">When you are ready click find path!</li>
+            </ul>
+
+            <div className="flex flex-col gap-6 my-3">
+              <div>
+                <p className="text-sm mb-2 font-semibold">Cell legend</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {legendData.map((i) => (
+                    <div className="flex items-center gap-2" key={i.name}>
+                      {i.render}
+                      <p className="text-sm text-skin-muted">{i.name}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    >
+      <IconButton aria-label="info" icon={<HiOutlineInformationCircle />} />
+    </Dialog>
+  );
+};
+
 export default PathFinding;

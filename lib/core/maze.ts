@@ -2,51 +2,8 @@ import { NodeType } from "types";
 import { generateRandomNumberFromRange } from "utils/arrayUtils";
 import { timeout } from "utils/timingUtils";
 
-type Cell = {
-  gridX: number;
-  gridY: number;
-  isWalkable: boolean;
-};
-
-const generateGrid = (grid: NodeType[][]) => {
-  let newGrid: Cell[][] = Array.from(Array(grid.length), (_) =>
-    Array(grid[0].length).fill({})
-  );
-
-  let startingCoords: { x: number; y: number } | null = null;
-  let endCoords: { x: number; y: number } | null = null;
-
-  for (let i = 0; i < grid.length; i++) {
-    for (let j = 0; j < grid[0].length; j++) {
-      newGrid[i][j] = {
-        gridX: j,
-        gridY: i,
-        isWalkable: [NodeType.Normal, NodeType.End].includes(grid[i][j]),
-      };
-
-      if (grid[i][j] === NodeType.Start) {
-        startingCoords = {
-          y: i,
-          x: j,
-        };
-      } else if (grid[i][j] === NodeType.End) {
-        endCoords = {
-          y: i,
-          x: j,
-        };
-      }
-    }
-  }
-
-  return {
-    newGrid,
-    startingCoords,
-    endCoords,
-  };
-};
-const stringify = (cell: Cell) => `${cell.gridX}-${cell.gridY}`;
-const getNeighbours = (grid: Cell[][], node: Cell) => {
-  let neighbours: Cell[] = [];
+const getNeighbours = (grid: NodeType[][], node: { x: number; y: number }) => {
+  let neighbours: { x: number; y: number }[] = [];
 
   let directions = [
     [1, 0],
@@ -56,10 +13,19 @@ const getNeighbours = (grid: Cell[][], node: Cell) => {
   ];
 
   for (let i = 0; i < 4; i++) {
-    let ny = node.gridY + directions[i][0];
-    let nx = node.gridX + directions[i][1];
-    if (ny >= 0 && nx >= 0 && ny < grid.length && nx < grid[0].length) {
-      neighbours.push(grid[ny][nx]);
+    let ny = node.y + directions[i][0];
+    let nx = node.x + directions[i][1];
+    if (
+      ny >= 0 &&
+      nx >= 0 &&
+      ny < grid.length &&
+      nx < grid[0].length &&
+      grid[ny][nx] === NodeType.Wall
+    ) {
+      neighbours.push({
+        x: nx,
+        y: ny,
+      });
     }
   }
 
@@ -99,6 +65,14 @@ export const recursiveDivision = async (
           i === _grid.length - 1 ||
           j === _grid[0].length - 1
         ) {
+          if (_grid[i][j] === NodeType.Start) {
+            _grid[1][1] = NodeType.Start;
+            handleSetNode(1, 1, NodeType.Start);
+          } else if (_grid[i][j] === NodeType.End) {
+            _grid[14][38] = NodeType.End;
+            handleSetNode(14, 38, NodeType.End);
+          }
+
           handleSetNode(i, j, NodeType.Wall);
           _grid[i][j] = NodeType.Wall;
           await timeout(5);
@@ -270,4 +244,118 @@ export const recursiveDivision = async (
       );
     }
   }
+};
+
+const DIR_HORIZONTAL = "horizontal";
+const DIR_VERTICAL = "vertical";
+export const prims = async (
+  grid: NodeType[][],
+  handleSetNode: (row: number, col: number, type: NodeType) => void
+) => {
+  let visited = Array.from({ length: grid.length }, () =>
+    Array.from({ length: grid[0].length }, () => false)
+  );
+
+  let _grid: NodeType[][] = Array.from({ length: grid.length }, () =>
+    Array.from({ length: grid[0].length }, () => NodeType.Normal)
+  );
+
+  for (let i = 0; i < _grid.length; i++) {
+    for (let j = 0; j < _grid[0].length; j++) {
+      _grid[i][j] = NodeType.Wall;
+      handleSetNode(i, j, NodeType.Wall);
+    }
+  }
+
+  // x-y
+  let frontier = new Set<string>();
+
+  // set start
+  _grid[0][0] = NodeType.Start;
+  handleSetNode(0, 0, NodeType.Start);
+
+  visited[0][0] = true;
+  let startNeighbours = getNeighbours(_grid, { x: 0, y: 0 });
+  startNeighbours.forEach((i) => {
+    visited[i.y][i.x] = true;
+    frontier.add(`${i.x}-${i.y}`);
+  });
+
+  const analyseWall = (x: number, y: number) => {
+    // analyseWall
+    const orientation = x % 2 === 1 ? DIR_HORIZONTAL : DIR_VERTICAL;
+
+    // get next cell
+    let newCell = { x: x, y: y + 1 };
+    if (y === visited.length - 1) {
+      return {
+        shouldOpen: false,
+        newCell: {
+          x: 1,
+          y: 1,
+        },
+      };
+    }
+    if (orientation === DIR_HORIZONTAL) {
+      newCell = { x: x + 1, y: y };
+      if (x === visited[0].length - 1) {
+        return {
+          shouldOpen: false,
+          newCell: {
+            x: 1,
+            y: 1,
+          },
+        };
+      }
+    }
+
+    // check should open
+    let shouldOpen = false;
+    shouldOpen = !visited[newCell.y][newCell.x];
+
+    if (!shouldOpen) {
+      newCell = { x: x, y: y - 1 };
+      if (orientation === DIR_HORIZONTAL) {
+        newCell = { x: x - 1, y: y };
+      }
+      shouldOpen = !visited[newCell.y][newCell.x];
+    }
+
+    return { shouldOpen, newCell };
+  };
+
+  while (frontier.size > 0) {
+    const max = frontier.size;
+    const idx = Math.floor(Math.random() * max);
+    const randomEle = Array.from(frontier)[idx];
+    frontier.delete(randomEle);
+    const [x, y] = randomEle.split("-").map((i) => parseInt(i));
+    const { shouldOpen, newCell } = analyseWall(x, y);
+
+    if (shouldOpen) {
+      _grid[y][x] = NodeType.Normal;
+      handleSetNode(y, x, NodeType.Normal);
+
+      _grid[newCell.y][newCell.x] = NodeType.Normal;
+      handleSetNode(newCell.y, newCell.x, NodeType.Normal);
+
+      visited[y][x] = true;
+      visited[newCell.y][newCell.x] = true;
+      let startNeighbours = getNeighbours(_grid, newCell);
+      startNeighbours.forEach((i) => {
+        visited[i.y][i.x] = true;
+        frontier.add(`${i.x}-${i.y}`);
+      });
+    } else {
+      _grid[y][x] = NodeType.Wall;
+      handleSetNode(y, x, NodeType.Wall);
+    }
+
+    await timeout(5);
+  }
+
+  await timeout(10);
+  // set end
+  _grid[_grid.length - 2][_grid[0].length - 1] = NodeType.End;
+  handleSetNode(_grid.length - 2, _grid[0].length - 1, NodeType.End);
 };

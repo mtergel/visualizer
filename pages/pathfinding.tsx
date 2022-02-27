@@ -15,7 +15,7 @@ import {
 import IconButton from "components/IconButton/IconButton";
 import astar from "core/astar";
 import dijkstra from "core/dijkstra";
-import { recursiveDivision } from "core/maze";
+import { prims, recursiveDivision } from "core/maze";
 import { bfs, dfs } from "core/pathfinding";
 import memoize from "memoize-one";
 import React, { memo, useCallback, useState } from "react";
@@ -34,6 +34,7 @@ enum AlgoKey {
 
 enum MazeKey {
   "RECURSIVE" = "Recursive Division",
+  "PRIM" = "Prim's",
 }
 
 type StateType = "INIT" | "FINDING" | "FINISHED";
@@ -236,10 +237,14 @@ const PathFinding: React.FC<PathFindingProps> = () => {
           grid.length - 3,
           2,
           grid[0].length - 3,
-          "horizontal",
+          "vertical",
           false,
           handleSetNode
         );
+        break;
+      }
+      case MazeKey.PRIM: {
+        await prims(grid, handleSetNode);
         break;
       }
     }
@@ -338,6 +343,12 @@ const PathFinding: React.FC<PathFindingProps> = () => {
                       >
                         Recursive division
                       </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => handleGenerateMaze(MazeKey.PRIM)}
+                        disabled={loading}
+                      >
+                        Prim&apos;s
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                   <Button
@@ -405,6 +416,14 @@ const PathFinding: React.FC<PathFindingProps> = () => {
                                   disabled={loading}
                                 >
                                   Recursive division
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    handleGenerateMaze(MazeKey.PRIM)
+                                  }
+                                  disabled={loading}
+                                >
+                                  Prim&apos;s
                                 </DropdownMenuItem>
                               </DialogClose>
                             </DropdownMenuContent>

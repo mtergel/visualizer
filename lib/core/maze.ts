@@ -1,5 +1,4 @@
 import { NodeType } from "types";
-import { generateRandomNumberFromRange } from "utils/arrayUtils";
 import { timeout } from "utils/timingUtils";
 
 const getNeighbours = (grid: NodeType[][], node: { x: number; y: number }) => {

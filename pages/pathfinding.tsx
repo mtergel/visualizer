@@ -28,7 +28,7 @@ interface PathFindingProps {}
 enum AlgoKey {
   "ASTAR" = "A*",
   "DIJKSTRA" = "Dijkstra's pathfinder",
-  "BFS" = "Bread First Search",
+  "BFS" = "Breadth First Search",
   "DFS" = "Depth First Search",
 }
 
